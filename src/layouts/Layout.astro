@@ -29,6 +29,14 @@ const { title, description, image } = Astro.props;
     <!-- Panggil Komponen SEO yang telah direvisi -->
     <SEO title={title} description={description} image={image} />
     
+    <!-- Alpine.js untuk fitur Menu Hamburger -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Style tambahan untuk mencegah flicker menu -->
+    <style is:global>
+      [x-cloak] { display: none !important; }
+    </style>
+    
     <!-- Slot ini memungkinkan Anda menyisipkan JSON-LD atau style khusus di halaman tertentu -->
     <slot name="head" />
   </head>
