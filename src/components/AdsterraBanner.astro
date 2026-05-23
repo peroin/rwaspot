@@ -1,0 +1,44 @@
+---
+// src/components/AdsterraBanner.astro
+const { type = "banner" } = Astro.props; 
+
+// Konfigurasi iklan
+const ads = {
+  banner: {
+    key: "0d1e33159744964659cb9d2f727263fa",
+    src: "//www.highperformanceformat.com/0d1e33159744964659cb9d2f727263fa/invoke.js"
+  },
+  square: {
+    key: "c638c69d43e19fdfba16a1c280a85a01",
+    src: "//www.highperformanceformat.com/c638c69d43e19fdfba16a1c280a85a01/invoke.js"
+  }
+};
+
+const currentAd = ads[type as keyof typeof ads];
+---
+
+<div class={`adsterra-container ${type}`}>
+  <script is:inline define:vars={{ key: currentAd.key }}>
+    atOptions = {
+      'key' : key,
+      'format' : 'iframe',
+      'height' : key === "0d1e33159744964659cb9d2f727263fa" ? 90 : 250,
+      'width' : key === "0d1e33159744964659cb9d2f727263fa" ? 728 : 300,
+      'params' : {}
+    };
+  </script>
+  <script is:inline src={currentAd.src}></script>
+</div>
+
+<style>
+  .adsterra-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    overflow: hidden; /* Mencegah konten meluap */
+  }
+  
+  /* Opsional: memastikan ukuran container menyesuaikan */
+  .banner { min-height: 90px; }
+  .square { min-height: 250px; }
+</style>

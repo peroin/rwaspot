@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import IklanComponent from '../../components/IklanComponent.astro';
+import AdsterraBanner from '../../components/AdsterraBanner.astro';
 import { sanityClient } from "sanity:client";
 import { PortableText } from 'astro-portabletext';
 
@@ -11,7 +11,7 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const post = await sanityClient.fetch(
-  `*[_type == "post" && slug.current == $slug][0]{ 
+  `*[_type == "post" && slug.current == $slug][0]{  
     title, 
     publishedAt, 
     body,
@@ -25,14 +25,12 @@ const post = await sanityClient.fetch(
 if (!post) return Astro.redirect('/404');
 ---
 
-<!-- Mengirimkan title, description (excerpt), dan imageUrl ke Layout untuk SEO -->
 <Layout 
   title={post.title} 
   description={post.excerpt || `Baca artikel selengkapnya tentang ${post.title} di RWASpot.`}
   image={post.imageUrl}
 >
   
-  <!-- Inject JSON-LD ke dalam head Layout menggunakan slot name="head" -->
   <Fragment slot="head">
     <script type="application/ld+json" is:inline set:html={JSON.stringify({
       "@context": "https://schema.org",
@@ -67,12 +65,10 @@ if (!post) return Astro.redirect('/404');
         <p class="text-sm">{new Date(post.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
       </div>
 
-      <!-- IKLAN 1: Dibawah Penulis -->
-      <IklanComponent 
-        imageUrl="/path-to-your-banner.jpg" 
-        link="#" 
-        label="Sponsored"
-      />
+      <!-- Iklan Adsterra di atas artikel -->
+      <div class="my-8 flex justify-center">
+        <AdsterraBanner />
+      </div>
       
       {post.imageUrl && (
         <img src={post.imageUrl} alt={post.title} class="w-full h-auto rounded-xl mb-10 shadow-md" />
@@ -83,12 +79,10 @@ if (!post) return Astro.redirect('/404');
         <PortableText value={post.body} />
       </div>
 
-      <!-- IKLAN 2: Di akhir konten -->
-      <IklanComponent 
-        imageUrl="/path-to-your-banner.jpg" 
-        link="#" 
-        label="Advertisement"
-      />
+      <!-- Iklan Adsterra di bawah artikel -->
+      <div class="my-8 flex justify-center border-t pt-8">
+        <AdsterraBanner />
+      </div>
     </article>
   </main>
 </Layout>
