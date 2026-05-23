@@ -1,0 +1,25 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import { client } from '../lib/sanity';
+
+const q = Astro.url.searchParams.get('q');
+const posts = q ? await client.fetch(`*[_type == "post" && (title match $q || body match $q) && category in ["dunia", "crypto", "rwa"]] | order(publishedAt desc)`, { q }) : [];
+---
+
+<html lang="id">
+<body class="bg-gray-50">
+  <Navbar />
+  <main class="max-w-4xl mx-auto py-10 px-4">
+    <h1 class="text-2xl font-bold mb-6">Hasil pencarian untuk: "{q}"</h1>
+    <div class="space-y-6">
+      {posts.map((post: any) => (
+        <a href={`/posts/${post.slug.current}`} class="block bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+          <h2 class="text-xl font-bold text-red-600">{post.title}</h2>
+        </a>
+      ))}
+      {posts.length === 0 && <p>Tidak ditemukan artikel dengan kata kunci tersebut.</p>}
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,187 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { client } from '../../lib/sanity';
+
+// Fungsi Helper untuk Optimasi Gambar
+const getOptimizedImageUrl = (url: string, width = 600, height = 400) => {
+  return url ? `${url}?w=${width}&h=${height}&fit=crop&auto=format&q=80` : '';
+};
+
+// Fungsi Helper untuk Format Tanggal
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('id-ID', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
+export async function getStaticPaths() {
+  return [
+    { params: { category: 'dunia' } },
+    { params: { category: 'crypto' } },
+    { params: { category: 'rwa' } },
+    { params: { category: 'price' } },
+  ];
+}
+
+const { category } = Astro.params;
+
+const descriptions: Record<string, string> = {
+  dunia: "Ikuti perkembangan berita dunia terkini, isu global, dan peristiwa penting yang mempengaruhi ekonomi serta kehidupan sehari-hari.",
+  crypto: "Update berita kripto terbaru, analisis pasar, tren aset digital, dan perkembangan teknologi blockchain di ekosistem global.",
+  rwa: "Informasi mendalam mengenai Real World Assets (RWA), tokenisasi aset fisik, dan peluang investasi di era digital masa kini.",
+  price: "Pantau pergerakan harga aset, analisis nilai pasar, dan data terkini yang membantu Anda mengambil keputusan investasi yang cerdas."
+};
+
+const pageDescription = descriptions[category] || `Baca artikel terbaru mengenai topik ${category} di RWADaily.`;
+
+const posts = await client.fetch(`*[_type == "post" && category == $category]|order(publishedAt desc){
+  title, slug, publishedAt, "imageUrl": image.asset->url
+}`, { category });
+
+const trending = await client.fetch(`*[_type == "post"]|order(publishedAt desc)[0...4]{
+  title, slug, "imageUrl": image.asset->url
+}`);
+
+// --- DATA SCHEMA MARKUP ---
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": `Berita ${category.charAt(0).toUpperCase() + category.slice(1)}`,
+  "description": pageDescription,
+  "url": Astro.url.href,
+  "mainEntity": {
+    "@type": "ItemList",
+    "itemListElement": posts.slice(0, 6).map((post: any, index: number) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `${Astro.site || 'https://rwaspot.com/'}posts/${post.slug?.current}`,
+      "name": post.title
+    }))
+  }
+};
+---
+
+<Layout title={`Berita ${category.charAt(0).toUpperCase() + category.slice(1)}`} description={pageDescription}>
+  
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
+
+  <main class="max-w-7xl mx-auto py-8 px-4">
+    <nav class="text-sm text-gray-500 mb-6 flex gap-2">
+      <a href="/" class="hover:text-red-600 transition">Beranda</a>
+      <span>/</span>
+      <span class="capitalize text-red-600 font-semibold">{category}</span>
+    </nav>
+
+    <section class="mb-8">
+      <a href="#" class="block w-full overflow-hidden rounded-2xl shadow-sm">
+        <img src="/iklan-header.jpg" alt="Iklan Header" class="w-full h-auto object-cover max-h-40" />
+      </a>
+    </section>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2">
+        <h1 class="text-3xl font-bold mb-8 capitalize border-l-4 border-red-600 pl-4">
+          Berita {category}
+        </h1>
+
+        {posts.length > 0 ? (
+          <>
+            <div id="posts-container" class="grid md:grid-cols-2 gap-6">
+              {posts.map((post: any, index: number) => (
+                <article class={`post-item ${index >= 6 ? 'hidden opacity-0' : ''} bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-500`}>
+                  <a href={`/posts/${post.slug?.current}`}>
+                    <img 
+                      src={getOptimizedImageUrl(post.imageUrl, 600, 300)} 
+                      alt={post.title}
+                      loading="lazy"
+                      class="w-full h-40 object-cover" 
+                    />
+                    <div class="p-4">
+                      <span class="text-xs text-gray-400 font-medium">{formatDate(post.publishedAt)}</span>
+                      <h3 class="font-bold text-lg mb-2 line-clamp-2 hover:text-red-600 transition">{post.title}</h3>
+                    </div>
+                  </a>
+                </article>
+              ))}
+            </div>
+
+            {posts.length > 6 && (
+              <div class="mt-10 text-center">
+                <button id="load-more" class="bg-gray-900 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-600 transition">
+                  Muat Artikel Lainnya
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div class="bg-white p-12 rounded-2xl text-center border border-gray-200">
+            <h2 class="text-xl text-gray-500">Belum ada artikel di kategori {category}.</h2>
+          </div>
+        )}
+      </div>
+
+      <aside class="space-y-8">
+        <!-- Berita Terkini -->
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+          <h3 class="font-bold text-lg mb-6 flex items-center gap-2">
+            <span class="w-2 h-6 bg-red-600 rounded-sm"></span> Berita Terkini
+          </h3>
+          <ul class="space-y-6">
+            {trending.map((post: any) => (
+              <li class="group">
+                <a href={`/posts/${post.slug?.current}`} class="flex gap-4">
+                  <div class="w-20 h-16 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
+                    <img src={getOptimizedImageUrl(post.imageUrl, 150, 150)} loading="lazy" class="w-full h-full object-cover" />
+                  </div>
+                  <h4 class="font-medium text-sm group-hover:text-red-600 line-clamp-2 transition">{post.title}</h4>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+        <!-- Iklan Sidebar -->
+        <div class="bg-white p-2 rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <p class="text-[10px] text-gray-400 text-center uppercase tracking-widest">Sponsored</p>
+          <a href="#" class="block w-full">
+            <img src="/iklan-sidebar.jpg" class="w-full h-auto rounded-xl" alt="Iklan Sidebar" />
+          </a>
+        </div>
+        
+        <!-- Widget Rekomendasi (DITAMBAHKAN KEMBALI) -->
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+          <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+            <span class="w-2 h-6 bg-red-600 rounded-sm"></span> Rekomendasi
+          </h3>
+          <ul class="space-y-4">
+            {trending.slice(0, 3).map((post: any) => (
+              <li>
+                <a href={`/posts/${post.slug?.current}`} class="block py-2 border-b border-gray-100 hover:text-red-600 transition">
+                  <span class="text-sm font-semibold">{post.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</Layout>
+
+<script is:inline>
+  document.getElementById('load-more')?.addEventListener('click', function() {
+    const hiddenPosts = document.querySelectorAll('.post-item.hidden');
+    for (let i = 0; i < 4 && i < hiddenPosts.length; i++) {
+      const item = hiddenPosts[i];
+      item.classList.remove('hidden');
+      setTimeout(() => {
+        item.classList.remove('opacity-0');
+      }, 50);
+    }
+    if (document.querySelectorAll('.post-item.hidden').length === 0) {
+      this.style.display = 'none';
+    }
+  });
+</script>

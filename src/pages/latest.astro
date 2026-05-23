@@ -1,0 +1,74 @@
+---
+import type { SanityDocument } from "@sanity/client";
+import { sanityClient } from "sanity:client";
+import Layout from "../layouts/Layout.astro";
+
+const POSTS_QUERY = `*[
+  _type == "post"
+  && defined(slug.current)
+]|order(publishedAt desc)[0...12]{
+    _id, 
+    title, 
+    slug, 
+    publishedAt,
+    "imageUrl": image.asset->url
+}`;
+
+const posts = await sanityClient.fetch<SanityDocument[]>(POSTS_QUERY);
+---
+
+<Layout title="Latest News">
+  <div class="max-w-7xl mx-auto py-12 px-4">
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-10">Latest News</h1>
+
+    <!-- Iklan Adsterra -->
+    <div class="my-10 flex justify-center">
+      <script is:inline>
+        atOptions = {
+          'key' : '0d1e33159744964659cb9d2f727263fa',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 728,
+          'params' : {}
+        };
+      </script>
+      <script is:inline src="https://www.highperformanceformat.com/0d1e33159744964659cb9d2f727263fa/invoke.js"></script>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {posts.map((post) => (
+        <article class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+          <div class="h-56 bg-gray-200">
+            {post.imageUrl && (
+              <img 
+                src={post.imageUrl} 
+                alt={post.title} 
+                class="w-full h-full object-cover" 
+              />
+            )}
+          </div>
+          <div class="p-6">
+            <p class="text-xs text-gray-400 mb-2 font-medium flex items-center gap-2">
+              {new Date(post.publishedAt).toLocaleDateString('id-ID', {
+                day: 'numeric', month: 'long', year: 'numeric'
+              })}
+              <span class="text-gray-300">•</span>
+              <span>RWASpot News</span>
+            </p>
+            
+            <h2 class="text-xl font-bold text-gray-900 mb-3 leading-snug line-clamp-2">
+              {post.title}
+            </h2>
+            
+            <a 
+              href={`/posts/${post.slug.current}`} 
+              class="inline-block mt-4 text-blue-600 font-semibold hover:text-blue-800 transition-colors flex items-center gap-1"
+            >
+              Read Article <span class="text-lg">—</span>
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</Layout>

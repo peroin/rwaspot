@@ -1,0 +1,45 @@
+---
+// src/layouts/Layout.astro
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import SEO from '../components/SEO.astro';
+
+// Mengambil props dari halaman pemanggil
+const { title, description, image } = Astro.props;
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Title statis/dinamis -->
+    <title>{title ? `${title} | RWASpot` : "RWASpot"}</title>
+    
+    <!-- Meta Keywords (SEO statis) -->
+    <meta name="keywords" content="RWA, Crypto, Saham, Berita Ekonomi, RWASpot" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Meta SEO Tambahan -->
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={Astro.url.href} />
+    
+    <!-- Panggil Komponen SEO yang telah direvisi -->
+    <SEO title={title} description={description} image={image} />
+    
+    <!-- Slot ini memungkinkan Anda menyisipkan JSON-LD atau style khusus di halaman tertentu -->
+    <slot name="head" />
+  </head>
+
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <Navbar />
+    
+    <main class="flex-grow">
+      <slot /> 
+    </main>
+
+    <Footer />
+  </body>
+</html>

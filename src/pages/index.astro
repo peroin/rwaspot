@@ -1,26 +1,171 @@
 ---
-import '../styles/global.css';
-// Component Imports
-import Button from '../components/Button.astro';
+import Layout from '../layouts/Layout.astro';
+import { client } from '../lib/sanity';
 
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+// 1. Data untuk Hero (3 Kategori)
+const featuredRaw = await client.fetch(`
+  *[_type == "post" && category in ["dunia", "crypto", "rwa"]] 
+  | order(publishedAt desc) {
+    category, title, slug, "imageUrl": image.asset->url
+  }
+`);
+
+const heroSlides = [
+  featuredRaw.find(p => p.category === 'dunia'),
+  featuredRaw.find(p => p.category === 'crypto'),
+  featuredRaw.find(p => p.category === 'rwa')
+].filter(Boolean);
+
+// 2. Data untuk konten lainnya
+const allPosts = await client.fetch(`*[_type == "post"] | order(publishedAt desc)[0...10] {
+  title, slug, publishedAt, "imageUrl": image.asset->url
+}`);
+
+// 3. Data Khusus untuk Section Kategori
+const cryptoPosts = await client.fetch(`*[_type == "post" && category == "crypto"] | order(publishedAt desc)[0...4] {
+  title, slug, "imageUrl": image.asset->url
+}`);
+
+const pricePosts = await client.fetch(`*[_type == "post" && category == "price"] | order(publishedAt desc)[0...4] {
+  title, slug, "imageUrl": image.asset->url
+}`);
+
+const sidebarPosts = allPosts.slice(1, 5);
+const recommendedPosts = allPosts.slice(0, 3);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro + TailwindCSS</title>
-	</head>
+<Layout title="Beranda">
+  <div class="max-w-7xl mx-auto px-4 mt-8">
+    <a href="#" class="block w-full overflow-hidden rounded-2xl shadow-md">
+      <img src="/iklan-header.jpg" alt="Iklan Header" class="w-full h-auto object-cover" />
+    </a>
+  </div>
 
-	<body>
-		<div class="grid place-items-center h-screen content-center">
-			<Button>Tailwind Button in Astro!</Button>
-			<a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a>
-		</div>
-	</body>
-</html>
+  <main class="max-w-7xl mx-auto py-8 px-4">
+    <div class="grid lg:grid-cols-3 gap-8">
+      
+      <div class="lg:col-span-2">
+        <section class="mb-12">
+          {heroSlides.length > 0 && (
+            <a id="hero-link" href={`/posts/${heroSlides[0].slug?.current}`}>
+              <div class="h-96 bg-gray-300 rounded-2xl overflow-hidden relative shadow-lg group">
+                <img id="hero-img" src={heroSlides[0].imageUrl} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <div class="absolute bottom-0 p-8 bg-gradient-to-t from-black/90 to-transparent text-white w-full">
+                  <span class="bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-sm">Unggulan</span>
+                  <h1 id="hero-title" class="text-3xl font-bold mt-2">{heroSlides[0].title}</h1>
+                </div>
+              </div>
+            </a>
+          )}
+        </section>
+
+        <section class="mb-12">
+          <h2 class="text-2xl font-bold mb-6 border-l-4 border-red-600 pl-4">Update Terbaru</h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            {allPosts.slice(1, 7).map((post: any) => (
+              <article class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition">
+                <a href={`/posts/${post.slug?.current}`}>
+                  <img src={post.imageUrl} class="w-full h-40 object-cover" />
+                  <div class="p-4">
+                    <h3 class="font-bold text-lg mb-2 line-clamp-2 hover:text-red-600 transition">{post.title}</h3>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <!-- SECTION: Highlight Crypto -->
+        <section class="mb-12">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold border-l-4 border-red-600 pl-4">Berita Crypto</h2>
+            <a href="/category/crypto" class="text-sm font-semibold text-red-600 hover:underline">Lihat Semua →</a>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {cryptoPosts.map((post: any) => (
+              <a href={`/posts/${post.slug?.current}`} class="group">
+                <img src={post.imageUrl} class="w-full h-24 object-cover rounded-lg mb-2" />
+                <h3 class="font-bold text-sm leading-tight group-hover:text-red-600 line-clamp-2">{post.title}</h3>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <!-- SECTION: Highlight Price -->
+        <section class="mb-12">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold border-l-4 border-red-600 pl-4">Market Price</h2>
+            <a href="/category/price" class="text-sm font-semibold text-red-600 hover:underline">Lihat Semua →</a>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {pricePosts.map((post: any) => (
+              <a href={`/posts/${post.slug?.current}`} class="group">
+                <img src={post.imageUrl} class="w-full h-24 object-cover rounded-lg mb-2" />
+                <h3 class="font-bold text-sm leading-tight group-hover:text-red-600 line-clamp-2">{post.title}</h3>
+              </a>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <aside class="space-y-8">
+        <div class="bg-white p-2 rounded-2xl border border-gray-200 shadow-sm">
+          <p class="text-[10px] text-gray-400 text-center mb-1 uppercase tracking-widest">Sponsored</p>
+          <a href="#" class="block w-full">
+            <img src="/iklan-sidebar.jpg" class="w-full h-auto rounded-xl" alt="Iklan Sidebar" />
+          </a>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+          <h3 class="font-bold text-lg mb-6 flex items-center gap-2">
+            <span class="w-2 h-6 bg-red-600 rounded-sm"></span> Berita Terkini
+          </h3>
+          <ul class="space-y-6">
+            {sidebarPosts.map((post: any) => (
+              <li class="group">
+                <a href={`/posts/${post.slug?.current}`} class="flex gap-4">
+                  <div class="w-20 h-16 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
+                    <img src={post.imageUrl} class="w-full h-full object-cover" />
+                  </div>
+                  <h4 class="font-medium text-sm group-hover:text-red-600 line-clamp-2 transition">{post.title}</h4>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+          <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+            <span class="w-2 h-6 bg-red-600 rounded-sm"></span> Rekomendasi
+          </h3>
+          <ul class="space-y-4">
+            {recommendedPosts.map((post: any) => (
+              <li>
+                <a href={`/posts/${post.slug?.current}`} class="block py-2 border-b border-gray-100 hover:text-red-600 transition">
+                  <span class="text-sm font-semibold">{post.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script is:inline define:vars={{ heroSlides }}>
+    let currentIndex = 0;
+    const heroImg = document.getElementById('hero-img');
+    const heroTitle = document.getElementById('hero-title');
+    const heroLink = document.getElementById('hero-link');
+
+    function nextSlide() {
+      if (!heroSlides || heroSlides.length === 0) return;
+      currentIndex = (currentIndex + 1) % heroSlides.length;
+      const slide = heroSlides[currentIndex];
+      if (heroImg) heroImg.src = slide.imageUrl;
+      if (heroTitle) heroTitle.innerText = slide.title;
+      if (heroLink) heroLink.href = `/posts/${slide.slug.current}`;
+    }
+    if (heroSlides && heroSlides.length > 0) setInterval(nextSlide, 5000);
+  </script>
+</Layout>

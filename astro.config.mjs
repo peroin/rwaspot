@@ -1,11 +1,23 @@
-// @ts-check
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "astro/config";
+import sanity from "@sanity/astro";
 
-import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'astro/config';
+import sitemap from "@astrojs/sitemap";
 
-// https://astro.build/config
+import cloudflare from "@astrojs/cloudflare";
+
 export default defineConfig({
-	vite: {
-		plugins: [tailwindcss()],
-	},
+  site: "https://rwadaily.biz.id",
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
+
+  integrations: [sanity({
+    projectId: "1dgx0sfa",
+    dataset: "production",
+    useCdn: false, 
+  }), sitemap()],
+
+  adapter: cloudflare(),
 });

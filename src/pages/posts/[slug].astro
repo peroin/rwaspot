@@ -1,0 +1,94 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import IklanComponent from '../../components/IklanComponent.astro';
+import { sanityClient } from "sanity:client";
+import { PortableText } from 'astro-portabletext';
+
+export async function getStaticPaths() {
+  const posts = await sanityClient.fetch(`*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`);
+  return posts.map((post: any) => ({ params: { slug: post.slug } }));
+}
+
+const { slug } = Astro.params;
+const post = await sanityClient.fetch(
+  `*[_type == "post" && slug.current == $slug][0]{ 
+    title, 
+    publishedAt, 
+    body,
+    excerpt, 
+    "imageUrl": image.asset->url,
+    "authors": authors[]->{name, role, "imageUrl": image.asset->url}
+  }`,
+  { slug }
+);
+
+if (!post) return Astro.redirect('/404');
+---
+
+<!-- Mengirimkan title, description (excerpt), dan imageUrl ke Layout untuk SEO -->
+<Layout 
+  title={post.title} 
+  description={post.excerpt || `Baca artikel selengkapnya tentang ${post.title} di RWASpot.`}
+  image={post.imageUrl}
+>
+  
+  <!-- Inject JSON-LD ke dalam head Layout menggunakan slot name="head" -->
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      "headline": post.title,
+      "image": [post.imageUrl],
+      "datePublished": post.publishedAt,
+      "author": post.authors?.map((author: any) => ({
+        "@type": "Person",
+        "name": author.name,
+        "jobTitle": author.role
+      }))
+    })}></script>
+  </Fragment>
+
+  <main class="max-w-4xl mx-auto py-12 px-4">
+    <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200">
+      <h1 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight text-gray-900">{post.title}</h1>
+      
+      <!-- Metadata Penulis & Tanggal -->
+      <div class="flex items-center gap-6 text-gray-500 mb-8 font-medium">
+        {post.authors?.map((author: any) => (
+          <div class="flex items-center gap-2">
+            {author.imageUrl && <img src={author.imageUrl} alt={author.name} class="w-8 h-8 rounded-full object-cover" />}
+            <div class="flex flex-col">
+              <span class="text-sm font-bold text-gray-800">{author.name}</span>
+              <span class="text-[10px] uppercase tracking-widest text-gray-400">{author.role}</span>
+            </div>
+          </div>
+        ))}
+        <span class="text-gray-300">•</span>
+        <p class="text-sm">{new Date(post.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+      </div>
+
+      <!-- IKLAN 1: Dibawah Penulis -->
+      <IklanComponent 
+        imageUrl="/path-to-your-banner.jpg" 
+        link="#" 
+        label="Sponsored"
+      />
+      
+      {post.imageUrl && (
+        <img src={post.imageUrl} alt={post.title} class="w-full h-auto rounded-xl mb-10 shadow-md" />
+      )}
+      
+      <!-- Konten Artikel -->
+      <div class="prose lg:prose-xl prose-red max-w-none">
+        <PortableText value={post.body} />
+      </div>
+
+      <!-- IKLAN 2: Di akhir konten -->
+      <IklanComponent 
+        imageUrl="/path-to-your-banner.jpg" 
+        link="#" 
+        label="Advertisement"
+      />
+    </article>
+  </main>
+</Layout>
