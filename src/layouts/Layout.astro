@@ -20,7 +20,19 @@ const { title, description, image } = Astro.props;
     
     <!-- Meta Keywords (SEO statis) -->
     <meta name="keywords" content="RWA, Crypto, Saham, Berita Ekonomi, RWASpot" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Favicon & PWA Icons (Sinkron dengan file di folder /public/) -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1a1c24" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="RWASpot">
     
     <!-- Meta SEO Tambahan -->
     <meta name="robots" content="index, follow" />
