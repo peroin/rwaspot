@@ -1,0 +1,16 @@
+---
+// src/components/AdWrapper.astro
+interface Props { 
+  class?: string; 
+}
+const { class: className } = Astro.props;
+---
+<div class={`overflow-x-auto scrollbar-hide snap-x flex gap-4 py-4 ${className}`}>
+  <slot />
+</div>
+
+<style>
+  /* Menyembunyikan scrollbar agar tampilan bersih */
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>

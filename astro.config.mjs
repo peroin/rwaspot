@@ -3,6 +3,7 @@ import { defineConfig } from "astro/config";
 import sanity from "@sanity/astro";
 import sitemap from "@astrojs/sitemap";
 import cloudflare from "@astrojs/cloudflare";
+import icon from "astro-icon"; // 1. Tambahkan import ini
 
 export default defineConfig({
   site: "https://rwadaily.biz.id",
@@ -12,6 +13,7 @@ export default defineConfig({
   },
 
   integrations: [
+    icon(), // 2. Tambahkan ini agar modul virtual terdaftar
     sanity({
       projectId: "1dgx0sfa",
       dataset: "production",

@@ -1,0 +1,19 @@
+---
+// src/components/portableText/ReadMore.astro
+const { node } = Astro.props;
+---
+
+{node.post ? (
+  <div class="my-6 p-4 bg-gray-50 border-l-4 border-blue-500 rounded-r-lg shadow-sm">
+    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Baca juga:</p>
+    
+    <!-- Link sekarang diarahkan ke /posts/ sesuai dengan struktur folder Anda -->
+    <a href={`/posts/${node.post.slug.current}`} class="text-blue-600 font-semibold hover:underline text-lg">
+      {node.post.title}
+    </a>
+  </div>
+) : (
+  <div class="my-4 p-2 bg-red-50 text-red-500 text-sm">
+    Artikel terkait tidak ditemukan.
+  </div>
+)}
