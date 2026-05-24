@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import AdsterraBanner from '../../components/AdsterraBanner.astro';
 import ShareButton from '../../components/ShareButton.astro';
 import AdWrapper from '../../components/AdWrapper.astro';
-import ArticleBody from '../../components/ArticleBody.astro'; // Import komponen baru
+import ArticleBody from '../../components/ArticleBody.astro'; 
 import { sanityClient } from "sanity:client";
 import { PortableText } from 'astro-portabletext';
 import ReadMore from '../../components/portableText/ReadMore.astro';
@@ -63,7 +63,7 @@ const components = { type: { readMore: ReadMore } };
   <main class="max-w-6xl mx-auto py-12 px-4 grid lg:grid-cols-3 gap-8">
     
     <div class="lg:col-span-2">
-      <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200">
+      <article class="bg-white p-6 md:p-12 rounded-2xl shadow-sm border border-gray-200">
         <h1 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight text-gray-900">{post.title}</h1>
         
         <div class="flex items-center gap-6 text-gray-500 mb-8 font-medium">
@@ -80,8 +80,9 @@ const components = { type: { readMore: ReadMore } };
           <p class="text-sm">{new Date(post.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
         </div>
 
+        {/* AdWrapper diperbaiki dengan class ad-item */}
         <AdWrapper>
-          <div class="min-w-[85vw] md:min-w-full snap-center">
+          <div class="ad-item w-full md:w-full snap-center">
             <AdsterraBanner />
           </div>
         </AdWrapper>
@@ -95,7 +96,7 @@ const components = { type: { readMore: ReadMore } };
         <div class="my-10 flex justify-center"><ShareButton /></div>
         
         <AdWrapper class="border-t pt-8">
-          <div class="min-w-[85vw] md:min-w-full snap-center">
+          <div class="ad-item w-full md:w-full snap-center">
             <AdsterraBanner />
           </div>
         </AdWrapper>

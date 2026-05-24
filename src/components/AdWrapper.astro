@@ -1,16 +1,37 @@
 ---
-// src/components/AdWrapper.astro
 interface Props { 
   class?: string; 
 }
+
 const { class: className } = Astro.props;
 ---
-<div class={`overflow-x-auto scrollbar-hide snap-x flex gap-4 py-4 ${className}`}>
+
+<!-- 
+  w-full: Mengambil lebar penuh parent
+  max-w-full: Membatasi agar tidak meluber keluar dari layar
+  overflow-x-auto: Memungkinkan scroll horizontal jika konten lebih lebar dari layar
+  flex: Membuat konten berbaris kesamping
+-->
+<div class={`w-full max-w-full overflow-x-auto scrollbar-hide snap-x flex gap-4 py-4 ${className}`}>
+  <!-- Kita gunakan slot agar Anda bisa memasukkan iklan/gambar apa saja di sini -->
   <slot />
 </div>
 
 <style>
-  /* Menyembunyikan scrollbar agar tampilan bersih */
-  .scrollbar-hide::-webkit-scrollbar { display: none; }
-  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  /* Menyembunyikan scrollbar agar tampilan lebih bersih di semua browser */
+  .scrollbar-hide::-webkit-scrollbar { 
+    display: none; 
+  }
+  .scrollbar-hide { 
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
+  }
+
+  /* 
+     Tips: Gunakan CSS ini agar elemen di dalam AdWrapper 
+     tidak dipaksa mengecil (shrink) oleh flexbox.
+  */
+  div :global(*) {
+    flex-shrink: 0;
+  }
 </style>

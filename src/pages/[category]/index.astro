@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import AdsterraBanner from '../../components/AdsterraBanner.astro';
+import AdWrapper from '../../components/AdWrapper.astro'; // Import AdWrapper
 import { client } from '../../lib/sanity';
 
 // Fungsi Helper untuk Optimasi Gambar
@@ -75,9 +76,13 @@ const schema = {
       <span class="capitalize text-red-600 font-semibold">{category}</span>
     </nav>
 
-    <!-- Iklan Header (Banner) -->
+    <!-- Iklan Header (Banner) menggunakan AdWrapper agar tidak meluber -->
     <section class="mb-8">
-      <AdsterraBanner type="banner" />
+      <AdWrapper>
+        <div class="ad-item w-full snap-center">
+          <AdsterraBanner type="banner" />
+        </div>
+      </AdWrapper>
     </section>
 
     <div class="grid lg:grid-cols-3 gap-8">
