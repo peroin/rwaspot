@@ -1,8 +1,6 @@
 ---
-// src/components/AdsterraBanner.astro
 const { type = "banner" } = Astro.props; 
 
-// Konfigurasi iklan
 const ads = {
   banner: {
     key: "0d1e33159744964659cb9d2f727263fa",
@@ -35,10 +33,15 @@ const currentAd = ads[type as keyof typeof ads];
     display: flex;
     justify-content: center;
     margin: 20px 0;
-    overflow: hidden; /* Mencegah konten meluap */
+    width: 100%;
+    /* Mencegah konten meluap keluar */
+    overflow: hidden; 
   }
-  
-  /* Opsional: memastikan ukuran container menyesuaikan */
-  .banner { min-height: 90px; }
-  .square { min-height: 250px; }
+
+  /* Memaksa iframe agar tidak melebihi lebar layar dan tetap proporsional */
+  :global(.adsterra-container iframe) {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+  }
 </style>
