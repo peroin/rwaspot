@@ -13,9 +13,11 @@ const ads = {
 };
 
 const currentAd = ads[type as keyof typeof ads];
+// Menentukan tinggi minimal agar tidak terjadi layout shift saat iklan dimuat
+const minHeight = type === 'banner' ? '90px' : '250px';
 ---
 
-<div class={`adsterra-container ${type}`}>
+<div class={`adsterra-container ${type}`} style={`min-height: ${minHeight};`}>
   <script is:inline define:vars={{ key: currentAd.key }}>
     atOptions = {
       'key' : key,
@@ -25,7 +27,7 @@ const currentAd = ads[type as keyof typeof ads];
       'params' : {}
     };
   </script>
-  <script is:inline src={currentAd.src}></script>
+  <script is:inline async src={currentAd.src}></script>
 </div>
 
 <style>
@@ -34,7 +36,6 @@ const currentAd = ads[type as keyof typeof ads];
     justify-content: center;
     margin: 20px 0;
     width: 100%;
-    /* Mencegah konten meluap keluar */
     overflow: hidden; 
   }
 
@@ -42,6 +43,8 @@ const currentAd = ads[type as keyof typeof ads];
   :global(.adsterra-container iframe) {
     max-width: 100% !important;
     width: 100% !important;
+    /* Memberikan tinggi yang fleksibel setelah iklan termuat */
     height: auto !important;
+    min-height: inherit;
   }
 </style>

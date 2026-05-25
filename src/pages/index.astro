@@ -1,12 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import AdsterraBanner from '../components/AdsterraBanner.astro';
-import AdWrapper from '../components/AdWrapper.astro'; // Komponen pembungkus untuk mencegah overflow
+import AdWrapper from '../components/AdWrapper.astro';
 import { client } from '../lib/sanity';
 
-// 1. Data untuk Hero (3 Kategori)
+// 1. Data untuk Hero
 const featuredRaw = await client.fetch(`
-  *[_type == "post" && category in ["dunia", "crypto", "rwa"]] 
+  *[_type == "post" && category in ["dunia", "crypto", "rwa", "price"]] 
   | order(publishedAt desc) {
     category, title, slug, "imageUrl": image.asset->url
   }
@@ -15,7 +15,8 @@ const featuredRaw = await client.fetch(`
 const heroSlides = [
   featuredRaw.find(p => p.category === 'dunia'),
   featuredRaw.find(p => p.category === 'crypto'),
-  featuredRaw.find(p => p.category === 'rwa')
+  featuredRaw.find(p => p.category === 'rwa'),
+  featuredRaw.find(p => p.category === 'price')
 ].filter(Boolean);
 
 // 2. Data untuk konten lainnya
@@ -23,7 +24,6 @@ const allPosts = await client.fetch(`*[_type == "post"] | order(publishedAt desc
   title, slug, publishedAt, "imageUrl": image.asset->url
 }`);
 
-// 3. Data Khusus untuk Section Kategori
 const cryptoPosts = await client.fetch(`*[_type == "post" && category == "crypto"] | order(publishedAt desc)[0...4] {
   title, slug, "imageUrl": image.asset->url
 }`);
@@ -33,11 +33,9 @@ const pricePosts = await client.fetch(`*[_type == "post" && category == "price"]
 }`);
 
 const sidebarPosts = allPosts.slice(1, 5);
-const recommendedPosts = allPosts.slice(0, 3);
 ---
 
 <Layout title="Beranda">
-  <!-- Iklan Header (Banner) dibungkus AdWrapper agar mobile-friendly -->
   <div class="max-w-7xl mx-auto px-4 mt-8">
     <AdWrapper>
       <div class="ad-item w-full snap-center">
@@ -54,7 +52,13 @@ const recommendedPosts = allPosts.slice(0, 3);
           {heroSlides.length > 0 && (
             <a id="hero-link" href={`/posts/${heroSlides[0].slug?.current}`}>
               <div class="h-96 bg-gray-300 rounded-2xl overflow-hidden relative shadow-lg group">
-                <img id="hero-img" src={heroSlides[0].imageUrl} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <img 
+                  id="hero-img" 
+                  src={`${heroSlides[0].imageUrl}?w=800&h=450&fit=crop&auto=format&fm=webp`} 
+                  alt={heroSlides[0].title} 
+                  fetchpriority="high"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                />
                 <div class="absolute bottom-0 p-8 bg-gradient-to-t from-black/90 to-transparent text-white w-full">
                   <span class="bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-sm">Unggulan</span>
                   <h1 id="hero-title" class="text-3xl font-bold mt-2">{heroSlides[0].title}</h1>
@@ -70,17 +74,14 @@ const recommendedPosts = allPosts.slice(0, 3);
             {allPosts.slice(1, 7).map((post: any) => (
               <article class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition">
                 <a href={`/posts/${post.slug?.current}`}>
-                  <img src={post.imageUrl} class="w-full h-40 object-cover" />
-                  <div class="p-4">
-                    <h3 class="font-bold text-lg mb-2 line-clamp-2 hover:text-red-600 transition">{post.title}</h3>
-                  </div>
+                  <img src={`${post.imageUrl}?w=400&auto=format&fm=webp`} alt={post.title} loading="lazy" class="w-full h-40 object-cover" />
+                  <div class="p-4"><h3 class="font-bold text-lg mb-2 line-clamp-2">{post.title}</h3></div>
                 </a>
               </article>
             ))}
           </div>
         </section>
 
-        <!-- SECTION: Highlight Crypto -->
         <section class="mb-12">
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold border-l-4 border-red-600 pl-4">Berita Crypto</h2>
@@ -89,14 +90,13 @@ const recommendedPosts = allPosts.slice(0, 3);
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             {cryptoPosts.map((post: any) => (
               <a href={`/posts/${post.slug?.current}`} class="group">
-                <img src={post.imageUrl} class="w-full h-24 object-cover rounded-lg mb-2" />
+                <img src={`${post.imageUrl}?w=300&auto=format&fm=webp`} alt={post.title} loading="lazy" class="w-full h-24 object-cover rounded-lg mb-2" />
                 <h3 class="font-bold text-sm leading-tight group-hover:text-red-600 line-clamp-2">{post.title}</h3>
               </a>
             ))}
           </div>
         </section>
 
-        <!-- SECTION: Highlight Price -->
         <section class="mb-12">
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold border-l-4 border-red-600 pl-4">Market Price</h2>
@@ -105,7 +105,7 @@ const recommendedPosts = allPosts.slice(0, 3);
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             {pricePosts.map((post: any) => (
               <a href={`/posts/${post.slug?.current}`} class="group">
-                <img src={post.imageUrl} class="w-full h-24 object-cover rounded-lg mb-2" />
+                <img src={`${post.imageUrl}?w=300&auto=format&fm=webp`} alt={post.title} loading="lazy" class="w-full h-24 object-cover rounded-lg mb-2" />
                 <h3 class="font-bold text-sm leading-tight group-hover:text-red-600 line-clamp-2">{post.title}</h3>
               </a>
             ))}
@@ -114,40 +114,17 @@ const recommendedPosts = allPosts.slice(0, 3);
       </div>
 
       <aside class="space-y-8">
-        <!-- Iklan Sidebar (Square) dibungkus AdWrapper -->
-        <AdWrapper>
-          <div class="ad-item w-full flex justify-center">
-            <AdsterraBanner type="square" />
-          </div>
-        </AdWrapper>
-
+        <AdWrapper><div class="ad-item w-full flex justify-center"><AdsterraBanner type="square" /></div></AdWrapper>
         <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h3 class="font-bold text-lg mb-6 flex items-center gap-2">
-            <span class="w-2 h-6 bg-red-600 rounded-sm"></span> Berita Terkini
-          </h3>
+          <h3 class="font-bold text-lg mb-6 flex items-center gap-2"><span class="w-2 h-6 bg-red-600 rounded-sm"></span> Berita Terkini</h3>
           <ul class="space-y-6">
             {sidebarPosts.map((post: any) => (
               <li class="group">
                 <a href={`/posts/${post.slug?.current}`} class="flex gap-4">
                   <div class="w-20 h-16 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
-                    <img src={post.imageUrl} class="w-full h-full object-cover" />
+                    <img src={`${post.imageUrl}?w=150&auto=format&fm=webp`} alt={post.title} loading="lazy" class="w-full h-full object-cover" />
                   </div>
                   <h4 class="font-medium text-sm group-hover:text-red-600 line-clamp-2 transition">{post.title}</h4>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        
-        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
-            <span class="w-2 h-6 bg-red-600 rounded-sm"></span> Rekomendasi
-          </h3>
-          <ul class="space-y-4">
-            {recommendedPosts.map((post: any) => (
-              <li>
-                <a href={`/posts/${post.slug?.current}`} class="block py-2 border-b border-gray-100 hover:text-red-600 transition">
-                  <span class="text-sm font-semibold">{post.title}</span>
                 </a>
               </li>
             ))}
@@ -167,10 +144,14 @@ const recommendedPosts = allPosts.slice(0, 3);
       if (!heroSlides || heroSlides.length === 0) return;
       currentIndex = (currentIndex + 1) % heroSlides.length;
       const slide = heroSlides[currentIndex];
-      if (heroImg) heroImg.src = slide.imageUrl;
+      if (heroImg) {
+        // Update URL dengan optimasi WebP saat slide berganti
+        heroImg.src = slide.imageUrl + '?w=800&h=450&fit=crop&auto=format&fm=webp';
+        heroImg.alt = slide.title;
+      }
       if (heroTitle) heroTitle.innerText = slide.title;
       if (heroLink) heroLink.href = `/posts/${slide.slug.current}`;
     }
-    if (heroSlides && heroSlides.length > 0) setInterval(nextSlide, 5000);
+    if (heroSlides && heroSlides.length > 0) setInterval(nextSlide, 7000);
   </script>
 </Layout>
