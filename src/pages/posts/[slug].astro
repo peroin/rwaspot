@@ -7,6 +7,8 @@ import ArticleBody from '../../components/ArticleBody.astro';
 import { sanityClient } from "sanity:client";
 import { PortableText } from 'astro-portabletext';
 import ReadMore from '../../components/portableText/ReadMore.astro';
+// Impor komponen gambar Anda di sini
+import ImageComponent from '../../components/portableText/ImageComponent.astro';
 
 export async function getStaticPaths() {
   const posts = await sanityClient.fetch(`*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`);
@@ -46,23 +48,11 @@ const popularPosts = await sanityClient.fetch(
 
 if (!post) return Astro.redirect('/404');
 
-// PERBAIKAN: Menggunakan fungsi terpisah untuk merender komponen agar aman dari error build
+// Menggunakan referensi komponen untuk menghindari error parsing build
 const components = { 
   types: { 
     readMore: ReadMore,
-    image: {
-      component: ({ node }: any) => {
-        const url = node.asset?.url ? `${node.asset.url}?w=800&auto=format&fm=webp` : "";
-        return (
-          <img 
-            src={url}
-            alt={node.alt || "Gambar artikel"} 
-            loading="lazy"
-            class="w-full h-auto rounded-xl mb-10 shadow-md" 
-          />
-        );
-      }
-    }
+    image: ImageComponent
   } 
 };
 ---
