@@ -1,13 +1,13 @@
 ---
+export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
 import AdsterraBanner from '../../components/AdsterraBanner.astro';
 import ShareButton from '../../components/ShareButton.astro';
-import AdWrapper from '../../components/AdWrapper.astro'; 
+import AdWrapper from '../../components/IklanWrapper.astro'; 
 import ArticleBody from '../../components/ArticleBody.astro'; 
 import { sanityClient } from "sanity:client";
 import { PortableText } from 'astro-portabletext';
 import ReadMore from '../../components/portableText/ReadMore.astro';
-// Impor komponen gambar Anda di sini
 import ImageComponent from '../../components/portableText/ImageComponent.astro';
 
 export async function getStaticPaths() {
@@ -21,9 +21,12 @@ const post = await sanityClient.fetch(
   `*[_type == "post" && slug.current == $slug][0]{  
     title, publishedAt, 
     body[] {  
-       ..., 
-       _type == "readMore" => { ..., post->{title, slug} },
-       _type == "image" => { ..., "alt": alt } 
+        ..., 
+        _type == "bacaJuga" => { 
+            ..., 
+            "post": post->{title, slug} 
+        },
+        _type == "image" => { ..., "alt": alt } 
     },
     excerpt, 
     "imageUrl": image.asset->url,
@@ -47,14 +50,6 @@ const popularPosts = await sanityClient.fetch(
 );
 
 if (!post) return Astro.redirect('/404');
-
-// Menggunakan referensi komponen untuk menghindari error parsing build
-const components = { 
-  types: { 
-    readMore: ReadMore,
-    image: ImageComponent
-  } 
-};
 ---
 
 <Layout 
@@ -92,7 +87,7 @@ const components = {
         </div>
 
         <AdWrapper>
-          <div class="ad-item w-full snap-center"><AdsterraBanner /></div>
+          <AdsterraBanner containerId="post-header-banner" adKey="0d1e33159744964659cb9d2f727263fa" height={90} width={728} />
         </AdWrapper>
         
         {post.imageUrl && (
@@ -105,13 +100,24 @@ const components = {
         )}
         
         <ArticleBody>
-          <PortableText value={post.body} components={components} />
+          <PortableText 
+            value={post.body} 
+            components={{
+              types: {
+                bacaJuga: ReadMore,
+                readMore: ReadMore,
+                readmore: ReadMore,
+                'read-more': ReadMore,
+                image: ImageComponent
+              }
+            }} 
+          />
         </ArticleBody>
 
         <div class="my-10 flex justify-center"><ShareButton /></div>
         
         <AdWrapper class="border-t pt-8">
-          <div class="ad-item w-full snap-center"><AdsterraBanner /></div>
+          <AdsterraBanner containerId="post-footer-banner" adKey="0d1e33159744964659cb9d2f727263fa" height={90} width={728} />
         </AdWrapper>
 
         {morePosts.length > 0 && (
@@ -138,20 +144,26 @@ const components = {
     </div>
 
     <aside class="lg:col-span-1">
-      <div class="sticky top-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-        <h2 class="text-xl font-bold text-gray-900 mb-6 border-b pb-4">Terpopuler</h2>
-        <div class="space-y-6">
-          {popularPosts.map((p: any) => (
-            <a href={`/posts/${p.slug}`} class="flex gap-4 group items-center">
-              <img 
-                src={`${p.imageUrl}?w=150&auto=format&fm=webp`} 
-                alt={p.imageAlt || p.title} 
-                loading="lazy"
-                class="w-16 h-16 rounded-lg object-cover shrink-0" 
-              />
-              <h3 class="text-sm font-semibold text-gray-800 group-hover:text-red-600 transition-colors leading-snug line-clamp-2">{p.title}</h3>
-            </a>
-          ))}
+      <div class="sticky top-8 space-y-8">
+        <AdWrapper>
+            <AdsterraBanner containerId="post-sidebar-square" adKey="c638c69d43e19fdfba16a1c280a85a01" height={250} width={300} />
+        </AdWrapper>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+          <h2 class="text-xl font-bold text-gray-900 mb-6 border-b pb-4">Terpopuler</h2>
+          <div class="space-y-6">
+            {popularPosts.map((p: any) => (
+              <a href={`/posts/${p.slug}`} class="flex gap-4 group items-center">
+                <img 
+                  src={`${p.imageUrl}?w=150&auto=format&fm=webp`} 
+                  alt={p.imageAlt || p.title} 
+                  loading="lazy"
+                  class="w-16 h-16 rounded-lg object-cover shrink-0" 
+                />
+                <h3 class="text-sm font-semibold text-gray-800 group-hover:text-red-600 transition-colors leading-snug line-clamp-2">{p.title}</h3>
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </aside>

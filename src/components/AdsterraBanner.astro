@@ -1,64 +1,36 @@
 ---
-const { type = "banner" } = Astro.props; 
-
-const ads = {
-  banner: {
-    key: "0d1e33159744964659cb9d2f727263fa",
-    src: "//www.highperformanceformat.com/0d1e33159744964659cb9d2f727263fa/invoke.js"
-  },
-  square: {
-    key: "c638c69d43e19fdfba16a1c280a85a01",
-    src: "//www.highperformanceformat.com/c638c69d43e19fdfba16a1c280a85a01/invoke.js"
-  }
-};
-
-const currentAd = ads[type as keyof typeof ads];
-const minHeight = type === 'banner' ? '90px' : '250px';
+// src/components/AdsterraBanner.astro
+const { containerId, adKey, height, width } = Astro.props;
 ---
 
-<div class={`adsterra-container ${type}`} id={`ad-${currentAd.key}`} style={`min-height: ${minHeight};`}>
-  <script is:inline define:vars={{ key: currentAd.key, src: currentAd.src }}>
-    // Fungsi untuk memuat script iklan hanya saat elemen terlihat
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // Inisialisasi konfigurasi Adsterra
-          window.atOptions = {
-            'key' : key,
-            'format' : 'iframe',
-            'height' : key === "0d1e33159744964659cb9d2f727263fa" ? 90 : 250,
-            'width' : key === "0d1e33159744964659cb9d2f727263fa" ? 728 : 300,
-            'params' : {}
-          };
-          
-          // Memasukkan script pemanggil iklan
-          const script = document.createElement('script');
-          script.src = src;
-          script.async = true;
-          document.currentScript.parentNode.appendChild(script);
-          
-          // Stop mengamati setelah dimuat
-          observer.disconnect();
-        }
-      });
-    }, { rootMargin: '200px' }); // Load iklan 200px sebelum user sampai ke posisi tersebut
+<div 
+  id={containerId} 
+  class="adsterra-banner-slot" 
+  style={`min-height: ${height}px; width: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden;`}
+>
+  <script is:inline define:vars={{ containerId, adKey, height, width }}>
+    (function() {
+      // Pastikan container ada sebelum memasang skrip
+      const container = document.getElementById(containerId);
+      if (!container) return;
 
-    observer.observe(document.getElementById(`ad-${key}`));
+      var atOptions = {
+        'key' : adKey,
+        'format' : 'iframe',
+        'height' : height,
+        'width' : width,
+        'params' : {}
+      };
+      
+      // Menulis konfigurasi ke window agar dikenali oleh invoke.js
+      window.atOptions = atOptions;
+      
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.async = true;
+      script.src = `https://www.highperformanceformat.com/${adKey}/invoke.js`;
+      
+      container.appendChild(script);
+    })();
   </script>
 </div>
-
-<style>
-  .adsterra-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-    width: 100%;
-    overflow: hidden; 
-  }
-
-  :global(.adsterra-container iframe) {
-    max-width: 100% !important;
-    height: auto !important;
-    min-height: inherit;
-  }
-</style>

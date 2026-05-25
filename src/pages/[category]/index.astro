@@ -1,34 +1,19 @@
 ---
+export const prerender = true; //
 import Layout from '../../layouts/Layout.astro';
 import AdsterraBanner from '../../components/AdsterraBanner.astro';
-import AdWrapper from '../../components/AdWrapper.astro'; // Import AdWrapper
+import AdWrapper from '../../components/IklanWrapper.astro';
 import { client } from '../../lib/sanity';
 
-// Fungsi Helper untuk Optimasi Gambar
-const getOptimizedImageUrl = (url: string, width = 600, height = 400) => {
-  return url ? `${url}?w=${width}&h=${height}&fit=crop&auto=format&q=80` : '';
-};
-
-// Fungsi Helper untuk Format Tanggal
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-};
+// Fungsi Helper
+const getOptimizedImageUrl = (url: string, width = 600, height = 400) => url ? `${url}?w=${width}&h=${height}&fit=crop&auto=format&q=80` : '';
+const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
 
 export async function getStaticPaths() {
-  return [
-    { params: { category: 'dunia' } },
-    { params: { category: 'crypto' } },
-    { params: { category: 'rwa' } },
-    { params: { category: 'price' } },
-  ];
+  return [{ params: { category: 'dunia' } }, { params: { category: 'crypto' } }, { params: { category: 'rwa' } }, { params: { category: 'price' } }];
 }
 
 const { category } = Astro.params;
-
 const descriptions: Record<string, string> = {
   dunia: "Ikuti perkembangan berita dunia terkini, isu global, dan peristiwa penting yang mempengaruhi ekonomi serta kehidupan sehari-hari.",
   crypto: "Update berita kripto terbaru, analisis pasar, tren aset digital, dan perkembangan teknologi blockchain di ekosistem global.",
@@ -37,16 +22,9 @@ const descriptions: Record<string, string> = {
 };
 
 const pageDescription = descriptions[category] || `Baca artikel terbaru mengenai topik ${category} di RWADaily.`;
+const posts = await client.fetch(`*[_type == "post" && category == $category]|order(publishedAt desc){title, slug, publishedAt, "imageUrl": image.asset->url}`, { category });
+const trending = await client.fetch(`*[_type == "post"]|order(publishedAt desc)[0...4]{title, slug, "imageUrl": image.asset->url}`);
 
-const posts = await client.fetch(`*[_type == "post" && category == $category]|order(publishedAt desc){
-  title, slug, publishedAt, "imageUrl": image.asset->url
-}`, { category });
-
-const trending = await client.fetch(`*[_type == "post"]|order(publishedAt desc)[0...4]{
-  title, slug, "imageUrl": image.asset->url
-}`);
-
-// --- DATA SCHEMA MARKUP ---
 const schema = {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
@@ -66,7 +44,6 @@ const schema = {
 ---
 
 <Layout title={`Berita ${category.charAt(0).toUpperCase() + category.slice(1)}`} description={pageDescription}>
-  
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(schema)} />
 
   <main class="max-w-7xl mx-auto py-8 px-4">
@@ -76,20 +53,20 @@ const schema = {
       <span class="capitalize text-red-600 font-semibold">{category}</span>
     </nav>
 
-    <!-- Iklan Header (Banner) menggunakan AdWrapper agar tidak meluber -->
     <section class="mb-8">
       <AdWrapper>
-        <div class="ad-item w-full snap-center">
-          <AdsterraBanner type="banner" />
-        </div>
+        <AdsterraBanner 
+          containerId="category-header-banner" 
+          adKey="0d1e33159744964659cb9d2f727263fa" 
+          height={90} 
+          width={728} 
+        />
       </AdWrapper>
     </section>
 
     <div class="grid lg:grid-cols-3 gap-8">
       <div class="lg:col-span-2">
-        <h1 class="text-3xl font-bold mb-8 capitalize border-l-4 border-red-600 pl-4">
-          Berita {category}
-        </h1>
+        <h1 class="text-3xl font-bold mb-8 capitalize border-l-4 border-red-600 pl-4">Berita {category}</h1>
 
         {posts.length > 0 ? (
           <>
@@ -97,12 +74,7 @@ const schema = {
               {posts.map((post: any, index: number) => (
                 <article class={`post-item ${index >= 6 ? 'hidden opacity-0' : ''} bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-500`}>
                   <a href={`/posts/${post.slug?.current}`}>
-                    <img 
-                      src={getOptimizedImageUrl(post.imageUrl, 600, 300)} 
-                      alt={post.title}
-                      loading="lazy"
-                      class="w-full h-40 object-cover" 
-                    />
+                    <img src={getOptimizedImageUrl(post.imageUrl, 600, 300)} alt={post.title} loading="lazy" class="w-full h-40 object-cover" />
                     <div class="p-4">
                       <span class="text-xs text-gray-400 font-medium">{formatDate(post.publishedAt)}</span>
                       <h3 class="font-bold text-lg mb-2 line-clamp-2 hover:text-red-600 transition">{post.title}</h3>
@@ -111,12 +83,9 @@ const schema = {
                 </article>
               ))}
             </div>
-
             {posts.length > 6 && (
               <div class="mt-10 text-center">
-                <button id="load-more" class="bg-gray-900 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-600 transition">
-                  Muat Artikel Lainnya
-                </button>
+                <button id="load-more" class="bg-gray-900 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-600 transition">Muat Artikel Lainnya</button>
               </div>
             )}
           </>
@@ -128,11 +97,8 @@ const schema = {
       </div>
 
       <aside class="space-y-8">
-        <!-- Berita Terkini -->
         <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h3 class="font-bold text-lg mb-6 flex items-center gap-2">
-            <span class="w-2 h-6 bg-red-600 rounded-sm"></span> Berita Terkini
-          </h3>
+          <h3 class="font-bold text-lg mb-6 flex items-center gap-2"><span class="w-2 h-6 bg-red-600 rounded-sm"></span> Berita Terkini</h3>
           <ul class="space-y-6">
             {trending.map((post: any) => (
               <li class="group">
@@ -147,16 +113,17 @@ const schema = {
           </ul>
         </div>
         
-        <!-- Iklan Sidebar (Square) -->
-        <div class="bg-white p-2 rounded-2xl border border-gray-200 shadow-sm">
-          <AdsterraBanner type="square" />
-        </div>
+        <AdWrapper>
+          <AdsterraBanner 
+            containerId="category-sidebar-square" 
+            adKey="c638c69d43e19fdfba16a1c280a85a01" 
+            height={250} 
+            width={300} 
+          />
+        </AdWrapper>
         
-        <!-- Widget Rekomendasi -->
         <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
-            <span class="w-2 h-6 bg-red-600 rounded-sm"></span> Rekomendasi
-          </h3>
+          <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><span class="w-2 h-6 bg-red-600 rounded-sm"></span> Rekomendasi</h3>
           <ul class="space-y-4">
             {trending.slice(0, 3).map((post: any) => (
               <li>
@@ -178,12 +145,8 @@ const schema = {
     for (let i = 0; i < 4 && i < hiddenPosts.length; i++) {
       const item = hiddenPosts[i];
       item.classList.remove('hidden');
-      setTimeout(() => {
-        item.classList.remove('opacity-0');
-      }, 50);
+      setTimeout(() => { item.classList.remove('opacity-0'); }, 50);
     }
-    if (document.querySelectorAll('.post-item.hidden').length === 0) {
-      this.style.display = 'none';
-    }
+    if (document.querySelectorAll('.post-item.hidden').length === 0) { this.style.display = 'none'; }
   });
 </script>

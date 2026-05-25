@@ -3,17 +3,21 @@ import { defineConfig } from "astro/config";
 import sanity from "@sanity/astro";
 import sitemap from "@astrojs/sitemap";
 import cloudflare from "@astrojs/cloudflare";
-import icon from "astro-icon"; // 1. Tambahkan import ini
+import icon from "astro-icon";
+
+// Deteksi apakah kita sedang dalam mode development
+const isDev = process.env.NODE_ENV === 'development';
 
 export default defineConfig({
   site: "https://rwadaily.biz.id",
+  output: 'server', // Wajib untuk Cloudflare SSR
 
   vite: {
     plugins: [tailwindcss()],
   },
 
   integrations: [
-    icon(), // 2. Tambahkan ini agar modul virtual terdaftar
+    icon(),
     sanity({
       projectId: "1dgx0sfa",
       dataset: "production",
@@ -22,8 +26,9 @@ export default defineConfig({
     sitemap()
   ],
 
-  // Menggunakan mode "directory" agar lebih kompatibel dengan Cloudflare Pages
-  adapter: cloudflare({
+  // Adapter hanya aktif jika tidak dalam mode development
+  // Ini akan menghilangkan error NonRunnablePipeline di Windows
+  adapter: isDev ? undefined : cloudflare({
     mode: "directory"
   }),
 });

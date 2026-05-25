@@ -1,6 +1,7 @@
 ---
 import type { SanityDocument } from "@sanity/client";
 import { sanityClient } from "sanity:client";
+import IklanWrapper from "../../components/IklanWrapper.astro"; // Pastikan path ini benar
 
 // Query mengambil data post
 const POSTS_QUERY = `*[
@@ -22,7 +23,6 @@ const posts = await sanityClient.fetch<SanityDocument[]>(POSTS_QUERY);
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>All News | BeInAstro Clone</title>
-    <!-- Menambahkan meta tag agar browser memaksa pembacaan UTF-8 -->
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   </head>
 
@@ -38,19 +38,21 @@ const posts = await sanityClient.fetch<SanityDocument[]>(POSTS_QUERY);
     <main class="max-w-7xl mx-auto py-12 px-4">
       <h1 class="text-4xl font-extrabold text-gray-900 mb-10">Latest News</h1>
 
-      <!-- Iklan Adsterra -->
-      <div class="my-10 flex justify-center">
-        <script is:inline>
-          atOptions = {
-            'key' : '0d1e33159744964659cb9d2f727263fa',
-            'format' : 'iframe',
-            'height' : 90,
-            'width' : 728,
-            'params' : {}
-          };
-        </script>
-        <script is:inline src="https://www.highperformanceformat.com/0d1e33159744964659cb9d2f727263fa/invoke.js"></script>
-      </div>
+      <!-- Iklan Adsterra dengan IklanWrapper -->
+      <IklanWrapper class="my-10">
+        <div class="adsterra-banner-slot" style="min-height: 90px; width: 728px; display: flex; justify-content: center;">
+          <script is:inline>
+            atOptions = {
+              'key' : '0d1e33159744964659cb9d2f727263fa',
+              'format' : 'iframe',
+              'height' : 90,
+              'width' : 728,
+              'params' : {}
+            };
+          </script>
+          <script is:inline src="https://www.highperformanceformat.com/0d1e33159744964659cb9d2f727263fa/invoke.js"></script>
+        </div>
+      </IklanWrapper>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {posts.map((post) => (
@@ -69,7 +71,6 @@ const posts = await sanityClient.fetch<SanityDocument[]>(POSTS_QUERY);
                 {new Date(post.publishedAt).toLocaleDateString('id-ID', {
                   day: 'numeric', month: 'long', year: 'numeric'
                 })}
-                <!-- Contoh penggunaan simbol dengan benar -->
                 <span class="text-gray-300">•</span>
                 <span>RWASpot News</span>
               </p>

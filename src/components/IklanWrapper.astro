@@ -1,0 +1,25 @@
+---
+// src/components/IklanWrapper.astro
+interface Props { class?: string; }
+const { class: className } = Astro.props;
+---
+
+<div 
+  class={`w-full overflow-x-auto scrollbar-hide snap-x flex gap-4 py-4 ${className}`}
+  style="min-height: 90px; align-items: center; justify-content: center;"
+>
+  <slot />
+</div>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  
+  :global(.adsterra-banner-slot) { 
+    flex-shrink: 0 !important; 
+    scroll-snap-align: start; 
+  }
+  
+  :global(.adsterra-banner-slot:first-child) { margin-left: 1rem; }
+  :global(.adsterra-banner-slot:last-child) { margin-right: 1rem; }
+</style>

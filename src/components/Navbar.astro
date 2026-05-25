@@ -5,19 +5,21 @@ const navLinks = ["Home", "Dunia", "Crypto", "RWA", "Price"];
 <nav x-data="{ mobileMenu: false }" class="bg-[#1a1c24] text-white py-4 sticky top-0 z-50 shadow-lg border-b border-gray-800">
   <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
     
-    <!-- Logo -->
-    <a href="/" class="text-2xl font-bold italic tracking-tighter">
+    <a href="/" class="text-2xl font-bold italic tracking-tighter" aria-label="RWASpot Home">
       <span class="text-red-600">RWA</span><span class="text-white">SPOT</span>
     </a>
     
-    <!-- Hamburger Button (Muncul di Mobile) -->
-    <button @click="mobileMenu = !mobileMenu" class="md:hidden p-2 text-white focus:outline-none">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <button 
+      @click="mobileMenu = !mobileMenu" 
+      :aria-expanded="mobileMenu"
+      aria-label="Buka Menu Navigasi" 
+      class="md:hidden p-2 text-white focus:outline-none"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
       </svg>
     </button>
     
-    <!-- Nav Links (Desktop) -->
     <div class="hidden md:flex gap-6 font-medium text-sm">
       {navLinks.map(link => (
         <a href={link === "Home" ? "/" : `/${link.toLowerCase()}`} class="hover:text-red-500 transition-colors">
@@ -26,8 +28,8 @@ const navLinks = ["Home", "Dunia", "Crypto", "RWA", "Price"];
       ))}
     </div>
 
-    <!-- Search -->
     <div class="hidden md:block relative">
+      <label for="search-input" class="sr-only">Cari Berita</label>
       <input 
         id="search-input"
         type="search" 
@@ -35,7 +37,6 @@ const navLinks = ["Home", "Dunia", "Crypto", "RWA", "Price"];
         autocomplete="off"
         class="bg-gray-800 text-sm px-4 py-1.5 rounded-full outline-none focus:ring-2 focus:ring-red-600 border border-gray-700 w-64 transition-all" 
       />
-      <!-- Container Hasil (Dipindahkan ke bawah agar tidak konflik dengan Mobile) -->
       <div id="search-results" class="absolute top-12 right-0 w-80 bg-white/95 backdrop-blur-sm text-gray-900 rounded-2xl shadow-2xl hidden overflow-hidden border border-gray-100 ring-1 ring-black/5 z-50">
         <ul id="results-list" class="max-h-80 overflow-y-auto py-2"></ul>
         <div class="px-4 py-2 bg-gray-50 border-t border-gray-100 text-[10px] text-gray-400 uppercase tracking-widest font-bold">RWASpot Search</div>
@@ -43,14 +44,13 @@ const navLinks = ["Home", "Dunia", "Crypto", "RWA", "Price"];
     </div>
   </div>
 
-  <!-- Mobile Menu Dropdown -->
   <div x-show="mobileMenu" x-cloak class="md:hidden bg-[#1a1c24] border-t border-gray-800 px-4 py-4 flex flex-col gap-4">
     {navLinks.map(link => (
       <a href={link === "Home" ? "/" : `/${link.toLowerCase()}`} class="block py-2 border-b border-gray-800 hover:text-red-500">
         {link}
       </a>
     ))}
-    <!-- Search Mobile -->
+    <label for="search-input-mobile" class="sr-only">Cari Berita</label>
     <input 
       id="search-input-mobile"
       type="search" 
@@ -59,15 +59,6 @@ const navLinks = ["Home", "Dunia", "Crypto", "RWA", "Price"];
     />
   </div>
 </nav>
-
-<!-- Alpine.js script (pastikan di Layout.astro sudah ada atau tambahkan di sini) -->
-<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-<script is:inline>
-  // Script Search (menggunakan input ID yang sama atau disesuaikan)
-  const searchInput = document.getElementById('search-input');
-  // ... (Gunakan logika search Anda yang sudah ada di sini)
-</script>
 
 <style>
   [x-cloak] { display: none !important; }
