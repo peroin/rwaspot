@@ -46,20 +46,18 @@ const popularPosts = await sanityClient.fetch(
 
 if (!post) return Astro.redirect('/404');
 
-// Memisahkan komponen agar lebih bersih dan aman untuk build
+// PERBAIKAN: Gunakan fungsi langsung agar lebih stabil untuk build
 const components = { 
   types: { 
     readMore: ReadMore,
-    image: {
-      component: ({ node }: any) => (
-        <img 
-          src={`${node.asset.url}?w=800&auto=format&fm=webp`} 
-          alt={node.alt || "Gambar artikel"} 
-          loading="lazy"
-          class="w-full h-auto rounded-xl mb-10 shadow-md" 
-        />
-      )
-    }
+    image: ({ node }: any) => (
+      <img 
+        src={`${node.asset.url}?w=800&auto=format&fm=webp`} 
+        alt={node.alt || "Gambar artikel"} 
+        loading="lazy"
+        class="w-full h-auto rounded-xl mb-10 shadow-md" 
+      />
+    )
   } 
 };
 ---
