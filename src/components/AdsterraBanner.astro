@@ -13,21 +13,38 @@ const ads = {
 };
 
 const currentAd = ads[type as keyof typeof ads];
-// Menentukan tinggi minimal agar tidak terjadi layout shift saat iklan dimuat
 const minHeight = type === 'banner' ? '90px' : '250px';
 ---
 
-<div class={`adsterra-container ${type}`} style={`min-height: ${minHeight};`}>
-  <script is:inline define:vars={{ key: currentAd.key }}>
-    atOptions = {
-      'key' : key,
-      'format' : 'iframe',
-      'height' : key === "0d1e33159744964659cb9d2f727263fa" ? 90 : 250,
-      'width' : key === "0d1e33159744964659cb9d2f727263fa" ? 728 : 300,
-      'params' : {}
-    };
+<div class={`adsterra-container ${type}`} id={`ad-${currentAd.key}`} style={`min-height: ${minHeight};`}>
+  <script is:inline define:vars={{ key: currentAd.key, src: currentAd.src }}>
+    // Fungsi untuk memuat script iklan hanya saat elemen terlihat
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Inisialisasi konfigurasi Adsterra
+          window.atOptions = {
+            'key' : key,
+            'format' : 'iframe',
+            'height' : key === "0d1e33159744964659cb9d2f727263fa" ? 90 : 250,
+            'width' : key === "0d1e33159744964659cb9d2f727263fa" ? 728 : 300,
+            'params' : {}
+          };
+          
+          // Memasukkan script pemanggil iklan
+          const script = document.createElement('script');
+          script.src = src;
+          script.async = true;
+          document.currentScript.parentNode.appendChild(script);
+          
+          // Stop mengamati setelah dimuat
+          observer.disconnect();
+        }
+      });
+    }, { rootMargin: '200px' }); // Load iklan 200px sebelum user sampai ke posisi tersebut
+
+    observer.observe(document.getElementById(`ad-${key}`));
   </script>
-  <script is:inline async src={currentAd.src}></script>
 </div>
 
 <style>
@@ -39,11 +56,8 @@ const minHeight = type === 'banner' ? '90px' : '250px';
     overflow: hidden; 
   }
 
-  /* Memaksa iframe agar tidak melebihi lebar layar dan tetap proporsional */
   :global(.adsterra-container iframe) {
     max-width: 100% !important;
-    width: 100% !important;
-    /* Memberikan tinggi yang fleksibel setelah iklan termuat */
     height: auto !important;
     min-height: inherit;
   }

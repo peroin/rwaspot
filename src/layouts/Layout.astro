@@ -57,8 +57,19 @@ const schema = {
 
     <style is:global>
       [x-cloak] { display: none !important; }
+      
       /* Optimasi rendering teks agar tidak bergeser saat font dimuat */
-      body { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+      body { 
+        text-rendering: optimizeLegibility; 
+        -webkit-font-smoothing: antialiased; 
+        font-display: swap; 
+      }
+
+      /* Memastikan font-family yang digunakan juga mendukung swap */
+      @font-face {
+        font-family: 'Inter'; /* Sesuaikan dengan nama font Anda */
+        font-display: swap;
+      }
     </style>
     
     <slot name="head" />

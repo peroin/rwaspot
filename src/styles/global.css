@@ -1,8 +1,19 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Jika Anda menggunakan Google Fonts, pastikan ada &display=swap di URL-nya */
+/* Contoh: @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap'); */
+
 @layer base {
   body {
     @apply bg-gray-50 text-gray-900;
+    /* Memberitahu browser untuk langsung menampilkan teks dengan font bawaan 
+       sebelum font kustom selesai diunduh */
+    font-display: swap;
+  }
+
+  /* Opsional: Terapkan secara spesifik jika ada font-family kustom */
+  html {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 }
