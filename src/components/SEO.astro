@@ -8,16 +8,14 @@ interface Props {
 
 const { 
   title, 
-  description = "RWADaily adalah portal berita terdepan yang berfokus pada Real World Assets (RWA), analisis saham, dan perkembangan ekosistem crypto terkini.",
+  description = "RWASpot adalah portal berita terdepan yang berfokus pada Real World Assets (RWA), analisis saham, dan perkembangan ekosistem crypto terkini.",
   image = "/og-image.jpg" 
 } = Astro.props;
 
-const siteName = "RWADaily";
+const siteName = "RWASpot";
 const fullTitle = title ? `${title} | ${siteName}` : siteName;
 
 // Memastikan URL gambar adalah absolut
-// Jika 'image' sudah berupa URL penuh dari Sanity, gunakan apa adanya. 
-// Jika path lokal, gabungkan dengan domain situs.
 const imageUrl = image.startsWith('http') 
   ? image 
   : new URL(image, Astro.site || 'https://rwadaily.biz.id').href;
@@ -27,6 +25,7 @@ const imageUrl = image.startsWith('http')
 <link rel="canonical" href={Astro.url.href} />
 
 <!-- Open Graph / Facebook -->
+<meta property="og:site_name" content={siteName} />
 <meta property="og:type" content="website" />
 <meta property="og:url" content={Astro.url.href} />
 <meta property="og:title" content={fullTitle} />

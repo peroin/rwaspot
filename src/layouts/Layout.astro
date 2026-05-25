@@ -9,6 +9,19 @@ const { title, description, image } = Astro.props;
 // Definisikan nama situs agar konsisten
 const siteName = "RWASpot";
 const pageTitle = title ? `${title} | ${siteName}` : siteName;
+
+// Menambahkan JSON-LD untuk membantu Google mengenali brand RWASpot
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": siteName,
+  "url": Astro.site ? Astro.site.href : "https://rwadaily.biz.id/",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": (Astro.site ? Astro.site.href : "https://rwadaily.biz.id/") + "search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+};
 ---
 
 <!doctype html>
@@ -17,24 +30,31 @@ const pageTitle = title ? `${title} | ${siteName}` : siteName;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <!-- Title harus tetap ada -->
     <title>{pageTitle}</title>
     
+    <!-- Meta SEO dasar -->
     <meta name="keywords" content="RWA, Crypto, Saham, Berita Ekonomi, RWASpot" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={Astro.url.href} />
     
+    <!-- Favicon & Manifest -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     <link rel="manifest" href="/site.webmanifest">
     
+    <!-- PWA & Theme -->
     <meta name="theme-color" content="#1a1c24" />
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content={siteName}>
     
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href={Astro.url.href} />
+    <!-- Structured Data (JSON-LD) untuk mempercepat pengenalan brand -->
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
     
+    <!-- SEO Component (Pastikan SEO.astro tidak memuat tag <title> lagi agar tidak duplikat) -->
     <SEO title={title} description={description} image={image} siteName={siteName} />
     
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
