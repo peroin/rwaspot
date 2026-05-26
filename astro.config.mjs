@@ -10,7 +10,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 export default defineConfig({
   site: "https://rwadaily.biz.id",
-  output: 'server', // Wajib untuk Cloudflare SSR
+  output: 'server', 
 
   vite: {
     plugins: [tailwindcss()],
@@ -26,9 +26,10 @@ export default defineConfig({
     sitemap()
   ],
 
-  // Adapter hanya aktif jika tidak dalam mode development
-  // Ini akan menghilangkan error NonRunnablePipeline di Windows
+  // Adapter Cloudflare
   adapter: isDev ? undefined : cloudflare({
-    mode: "directory"
+    mode: "directory",
+    // Tambahkan opsi ini agar Cloudflare lebih mudah mengenali file statis
+    imageService: 'passthrough' 
   }),
 });
