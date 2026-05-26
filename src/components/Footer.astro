@@ -1,16 +1,24 @@
 ---
-// src/components/Footer.astro
 import { Icon } from 'astro-icon/components';
+
+const navLinks = [
+  { name: "Berita Crypto", url: "/crypto" },
+  { name: "Analisis RWA", url: "/rwa" },
+  { name: "Tim Editorial", url: "/team" },
+  { name: "Tentang Kami", url: "/about" },
+  { name: "Kebijakan Privasi", url: "/privacy-policy" },
+  { name: "Disclaimer", url: "/disclaimer" }
+];
 ---
 
 <footer class="bg-gray-900 text-gray-300 py-16 px-4 border-t-4 border-red-600">
-  <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
     
-    <!-- Bagian 1: Tentang RWASpot -->
+    <!-- Bagian 1: Tentang RWADaily -->
     <div>
-      <h3 class="text-white text-lg font-bold mb-4">Tentang RWASpot</h3>
+      <h3 class="text-white text-lg font-bold mb-4">Tentang RWADaily</h3>
       <p class="text-sm leading-relaxed mb-6">
-        RWASpot adalah portal berita terdepan yang berfokus pada Real World Assets (RWA), saham, dan ekosistem crypto. Kami berkomitmen memberikan analisis mendalam bagi investor cerdas.
+        RWADaily adalah portal berita terdepan yang berfokus pada Real World Assets (RWA) dan ekosistem crypto. Kami berkomitmen memberikan analisis mendalam bagi investor cerdas.
       </p>
       
       <div class="text-xs text-gray-400 mb-6">
@@ -18,7 +26,7 @@ import { Icon } from 'astro-icon/components';
         <p>Plaza Asia, Jl. K.H.Z. Mustofa No. 326,<br/> Tasikmalaya, Jawa Barat 46126, Indonesia.</p>
       </div>
 
-      <!-- Sosial Media Ikon -->
+      <!-- Ikon Media Sosial RWADaily -->
       <div class="flex gap-4">
         <a href="https://www.linkedin.com/in/rwadailybiz/" class="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn">
           <Icon name="mdi:linkedin" class="w-6 h-6" />
@@ -35,45 +43,31 @@ import { Icon } from 'astro-icon/components';
       </div>
     </div>
 
-    <!-- Bagian 2: Tim Editorial -->
-    <div>
-      <h3 class="text-white text-lg font-bold mb-4">Tim Editorial</h3>
-      <div class="space-y-6">
-        {[
-          { name: "Iqbal Maulana", role: "Pakar Saham & Crypto", fb: "https://www.facebook.com/share/18kcTm8hKy/", ig: "https://www.instagram.com/iqbalmaulanas_?igsh=dGQyZTducGI2NXMw" },
-          { name: "Siti Rohimah", role: "Riset Data Saham & Crypto", fb: "https://www.facebook.com/share/1JVtw65hVv/", ig: "https://www.instagram.com/sitirohimah08_?igsh=MWpocTJkaTl1MHF5dQ==" },
-          { name: "Galuh Purnama", role: "Analis Pasar", ig: "https://www.instagram.com/luhhhhh666?igsh=MXh5cjBuanBidHhvdw==" }
-        ].map((member) => (
-          <div class="flex items-center justify-between group">
-            <div>
-              <p class="text-white font-semibold text-sm">{member.name}</p>
-              <p class="text-xs text-gray-500 group-hover:text-gray-300 transition-colors">{member.role}</p>
-            </div>
-            <div class="flex gap-3">
-              {member.fb && <a href={member.fb} target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-white"><Icon name="mdi:facebook" class="w-4 h-4" /></a>}
-              {member.ig && <a href={member.ig} target="_blank" rel="noopener noreferrer" class="text-pink-500 hover:text-white"><Icon name="mdi:instagram" class="w-4 h-4" /></a>}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <!-- Bagian 3: Navigasi & Legal -->
+    <!-- Bagian 2: Pintasan -->
     <div>
       <h3 class="text-white text-lg font-bold mb-4">Pintasan</h3>
       <ul class="space-y-3 text-sm">
-        <li><a href="/crypto" class="hover:text-red-500 transition-colors flex items-center gap-2"><Icon name="mdi:chevron-right" class="w-4 h-4"/> Berita Crypto</a></li>
-        <li><a href="/saham" class="hover:text-red-500 transition-colors flex items-center gap-2"><Icon name="mdi:chevron-right" class="w-4 h-4"/> Analisis Saham</a></li>
-        <li><a href="/about" class="hover:text-red-500 transition-colors flex items-center gap-2"><Icon name="mdi:chevron-right" class="w-4 h-4"/> Tentang Kami</a></li>
-        <li><a href="/privacy-policy" class="hover:text-red-500 transition-colors flex items-center gap-2"><Icon name="mdi:chevron-right" class="w-4 h-4"/> Kebijakan Privasi</a></li>
-        <li><a href="/disclaimer" class="hover:text-red-500 transition-colors flex items-center gap-2"><Icon name="mdi:chevron-right" class="w-4 h-4"/> Disclaimer</a></li>
+        {navLinks.map((link) => (
+          <li>
+            <a href={link.url} class="hover:text-red-500 transition-colors flex items-center gap-2">
+              <Icon name="mdi:chevron-right" class="w-4 h-4"/> {link.name}
+            </a>
+          </li>
+        ))}
       </ul>
+    </div>
+
+    <!-- Bagian 3: Banner Kolaborasi -->
+    <div class="bg-red-900/20 p-6 rounded-xl border border-red-900/50 flex flex-col justify-center">
+      <h3 class="text-white font-bold mb-2">Ingin Berkolaborasi?</h3>
+      <p class="text-xs text-gray-400 mb-4">Bergabunglah dengan tim kami atau kirimkan berita menarik seputar RWA dan Crypto.</p>
+      <a href="/contact" class="text-sm text-red-400 hover:text-white font-semibold transition">Hubungi Kami →</a>
     </div>
   </div>
 
   <!-- Copyright -->
   <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-gray-800 text-center text-xs text-gray-500 px-4">
-    <p class="mb-2">© {new Date().getFullYear()} RWASpot — All rights reserved.</p>
-    <p>Investasi di bidang crypto dan saham memiliki risiko tinggi. Lakukan riset mandiri.</p>
+    <p class="mb-2">© {new Date().getFullYear()} RWADaily — All rights reserved.</p>
+    <p>Investasi di bidang crypto memiliki risiko tinggi. Lakukan riset mandiri.</p>
   </div>
 </footer>

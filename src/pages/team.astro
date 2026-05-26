@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { teamMembers } from '../data/team.js'; // Mengambil data dari file data yang kita buat tadi
+---
+
+<Layout title="Tim Editorial - RWASpot">
+  <main class="max-w-4xl mx-auto py-16 px-4">
+    <h1 class="text-4xl font-bold mb-8">Tim Editorial Kami</h1>
+    <p class="mb-12 text-gray-600">Kenali para profesional di balik artikel-artikel RWASpot.</p>
+    
+    <div class="grid md:grid-cols-2 gap-6">
+      {teamMembers.map((member) => (
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+          <h2 class="text-xl font-bold">{member.name}</h2>
+          <p class="text-red-600 mb-4">{member.role}</p>
+          <div class="flex gap-4">
+            {member.fb && <a href={member.fb} target="_blank" class="text-blue-600 hover:underline">Facebook</a>}
+            {member.ig && <a href={member.ig} target="_blank" class="text-pink-600 hover:underline">Instagram</a>}
+          </div>
+        </div>
+      ))}
+    </div>
+  </main>
+</Layout>

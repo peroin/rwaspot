@@ -7,12 +7,13 @@ if (!post) return null;
 const slug = typeof post.slug === 'string' ? post.slug : post.slug?.current;
 ---
 
-<div class="my-6 p-4 bg-white border border-gray-100 rounded-xl shadow-sm">
-  <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
-    Baca Juga:
-  </p>
+<div class="my-2 px-2 py-1 border border-gray-100 bg-gray-50 rounded hover:border-red-200 transition-colors">
+  <span class="text-[6px] font-bold text-red-600 uppercase tracking-widest block leading-none mb-0.5">
+    Baca Juga
+  </span>
+  
   <a href={`/posts/${slug}`} class="block group">
-    <h3 class="text-lg font-semibold text-gray-800 group-hover:text-red-600 transition-colors">
+    <h3 class="text-[10px] font-medium text-gray-800 leading-tight group-hover:text-red-600 transition-colors">
       {post.title}
     </h3>
   </a>
