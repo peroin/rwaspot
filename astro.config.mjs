@@ -2,15 +2,11 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import sanity from "@sanity/astro";
 import sitemap from "@astrojs/sitemap";
-import cloudflare from "@astrojs/cloudflare";
 import icon from "astro-icon";
-
-// Deteksi apakah kita sedang dalam mode development
-const isDev = process.env.NODE_ENV === 'development';
 
 export default defineConfig({
   site: "https://rwadaily.biz.id",
-  output: 'server', 
+  output: 'static', // UBAH KE 'static'
 
   vite: {
     plugins: [tailwindcss()],
@@ -25,11 +21,5 @@ export default defineConfig({
     }), 
     sitemap()
   ],
-
-  // Adapter Cloudflare
-  adapter: isDev ? undefined : cloudflare({
-    mode: "directory",
-    // Tambahkan opsi ini agar Cloudflare lebih mudah mengenali file statis
-    imageService: 'passthrough' 
-  }),
+  // HAPUS bagian adapter cloudflare seluruhnya
 });
