@@ -6,9 +6,7 @@ import ShareButton from '../../components/ShareButton.astro';
 import AdWrapper from '../../components/IklanWrapper.astro'; 
 import ArticleBody from '../../components/ArticleBody.astro'; 
 import { sanityClient } from "sanity:client";
-import { PortableText } from 'astro-portabletext';
-import ReadMore from '../../components/portableText/ReadMore.astro';
-import ImageComponent from '../../components/portableText/ImageComponent.astro';
+import ReadMore from '../../components/ReadMore.astro';
 
 export async function getStaticPaths() {
   const posts = await sanityClient.fetch(`*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`);
@@ -23,7 +21,7 @@ const post = await sanityClient.fetch(
     body[] {  
         ..., 
         _type == "bacaJuga" => { 
-            ..., 
+            _type,
             "post": post->{title, slug} 
         },
         _type == "image" => { ..., "alt": alt } 
@@ -57,7 +55,6 @@ if (!post) return Astro.redirect('/404');
   description={post.excerpt || `Baca artikel selengkapnya tentang ${post.title} di RWASpot.`}
   image={post.imageUrl}
 >
-  
   <Fragment slot="head">
     <script type="application/ld+json" is:inline set:html={JSON.stringify({
       "@context": "https://schema.org", "@type": "NewsArticle",
@@ -67,7 +64,6 @@ if (!post) return Astro.redirect('/404');
   </Fragment>
 
   <main class="max-w-6xl mx-auto py-12 px-4 grid lg:grid-cols-3 gap-8">
-    
     <div class="lg:col-span-2">
       <article class="bg-white p-6 md:p-12 rounded-2xl shadow-sm border border-gray-200">
         <h1 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight text-gray-900">{post.title}</h1>
@@ -86,10 +82,6 @@ if (!post) return Astro.redirect('/404');
           <p class="text-sm">{new Date(post.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
         </div>
 
-        <AdWrapper>
-          <AdsterraBanner containerId="post-header-banner" adKey="0d1e33159744964659cb9d2f727263fa" height={90} width={728} />
-        </AdWrapper>
-        
         {post.imageUrl && (
           <img 
             src={`${post.imageUrl}?w=1000&auto=format&fm=webp`} 
@@ -100,26 +92,32 @@ if (!post) return Astro.redirect('/404');
         )}
         
         <ArticleBody>
-          <PortableText 
-            value={post.body} 
-            components={{
-              types: {
-                bacaJuga: ReadMore,
-                readMore: ReadMore,
-                readmore: ReadMore,
-                'read-more': ReadMore,
-                image: ImageComponent
-              }
-            }} 
-          />
+          {post.body?.map((block: any) => {
+            if (block._type === 'bacaJuga') return <ReadMore node={block} />;
+            if (block._type === 'image') return <img src={`${block.asset?.url}?w=800&auto=format`} alt={block.alt || 'Gambar'} class="my-8 rounded-xl" />;
+            if (block._type === 'block') {
+              return (
+                <p class="mb-5 text-lg text-gray-700 leading-relaxed">
+                  {block.children?.map((child: any) => {
+                    const mark = block.markDefs?.find((m: any) => child.marks?.includes(m._key));
+                    if (mark && mark._type === 'link') {
+                      return (
+                        <a href={mark.href} target="_blank" rel="noopener noreferrer" class="text-red-600 font-semibold hover:underline">
+                          {child.text}
+                        </a>
+                      );
+                    }
+                    return child.text;
+                  })}
+                </p>
+              );
+            }
+            return null;
+          })}
         </ArticleBody>
 
         <div class="my-10 flex justify-center"><ShareButton /></div>
         
-        <AdWrapper class="border-t pt-8">
-          <AdsterraBanner containerId="post-footer-banner" adKey="0d1e33159744964659cb9d2f727263fa" height={90} width={728} />
-        </AdWrapper>
-
         {morePosts.length > 0 && (
           <div class="mt-16 border-t pt-12">
             <h2 class="text-2xl font-bold text-gray-900 mb-8">Jelajahi Berita Lainnya</h2>
@@ -145,10 +143,6 @@ if (!post) return Astro.redirect('/404');
 
     <aside class="lg:col-span-1">
       <div class="sticky top-8 space-y-8">
-        <AdWrapper>
-            <AdsterraBanner containerId="post-sidebar-square" adKey="c638c69d43e19fdfba16a1c280a85a01" height={250} width={300} />
-        </AdWrapper>
-
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
           <h2 class="text-xl font-bold text-gray-900 mb-6 border-b pb-4">Terpopuler</h2>
           <div class="space-y-6">

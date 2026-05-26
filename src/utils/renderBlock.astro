@@ -1,0 +1,12 @@
+---
+import ReadMore from '../components/portableText/ReadMore.astro';
+import ImageComponent from '../components/portableText/ImageComponent.astro';
+
+const { block } = Astro.props;
+---
+
+{block._type === 'bacaJuga' && <ReadMore node={block} />}
+{block._type === 'image' && <ImageComponent node={block} />}
+{block._type === 'block' && (
+    <p class="mb-4">{block.children?.map((c: any) => c.text).join('')}</p>
+)}

@@ -23,7 +23,6 @@
     "@tailwindcss/vite": "^4.2.1",
     "@types/canvas-confetti": "^1.9.0",
     "astro": "^6.3.7",
-    "astro-portabletext": "^0.13.0",
     "canvas-confetti": "^1.9.4",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

@@ -2,6 +2,9 @@
 import Layout from '../layouts/Layout.astro';
 import AdsterraBanner from '../components/AdsterraBanner.astro';
 import AdWrapper from '../components/IklanWrapper.astro';
+import Hero from '../components/Hero.astro';
+import LatestPosts from '../components/LatestPosts.astro';
+import TrendingSidebar from '../components/TrendingSidebar.astro';
 import { client } from '../lib/sanity';
 
 // 1. Data untuk Hero
@@ -32,21 +35,15 @@ const pricePosts = await client.fetch(`*[_type == "post" && category == "price"]
   title, slug, "imageUrl": image.asset->url
 }`);
 
+// Widget Rekomendasi
+const recommendationPosts = await client.fetch(`*[_type == "post"] | order(publishedAt desc)[1...4] {
+  title, slug
+}`);
+
 const sidebarPosts = allPosts.slice(1, 5);
 ---
 
 <Layout title="Beranda">
-  <div class="max-w-7xl mx-auto px-4 mt-8">
-    <AdWrapper>
-      <AdsterraBanner 
-        containerId="home-header-banner" 
-        adKey="0d1e33159744964659cb9d2f727263fa" 
-        height={90} 
-        width={728} 
-      />
-    </AdWrapper>
-  </div>
-
   <main class="max-w-7xl mx-auto py-8 px-4">
     <div class="grid lg:grid-cols-3 gap-8">
       
@@ -117,15 +114,6 @@ const sidebarPosts = allPosts.slice(1, 5);
       </div>
 
       <aside class="space-y-8">
-        <AdWrapper>
-          <AdsterraBanner 
-            containerId="home-sidebar-square" 
-            adKey="c638c69d43e19fdfba16a1c280a85a01" 
-            height={250} 
-            width={300} 
-          />
-        </AdWrapper>
-        
         <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
           <h3 class="font-bold text-lg mb-6 flex items-center gap-2"><span class="w-2 h-6 bg-red-600 rounded-sm"></span> Berita Terkini</h3>
           <ul class="space-y-6">
@@ -136,6 +124,21 @@ const sidebarPosts = allPosts.slice(1, 5);
                     <img src={`${post.imageUrl}?w=150&auto=format&fm=webp`} alt={post.title} loading="lazy" class="w-full h-full object-cover" />
                   </div>
                   <h4 class="font-medium text-sm group-hover:text-red-600 line-clamp-2 transition">{post.title}</h4>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+          <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+            <span class="w-2 h-6 bg-red-600 rounded-sm"></span> Rekomendasi
+          </h3>
+          <ul class="space-y-4">
+            {recommendationPosts.map((post: any) => (
+              <li>
+                <a href={`/posts/${post.slug?.current}`} class="block py-2 border-b border-gray-100 hover:text-red-600 transition text-sm font-semibold text-gray-800">
+                  {post.title}
                 </a>
               </li>
             ))}

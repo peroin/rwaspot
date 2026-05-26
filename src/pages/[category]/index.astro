@@ -1,5 +1,5 @@
 ---
-export const prerender = true; //
+export const prerender = true; 
 import Layout from '../../layouts/Layout.astro';
 import AdsterraBanner from '../../components/AdsterraBanner.astro';
 import AdWrapper from '../../components/IklanWrapper.astro';
@@ -53,17 +53,6 @@ const schema = {
       <span class="capitalize text-red-600 font-semibold">{category}</span>
     </nav>
 
-    <section class="mb-8">
-      <AdWrapper>
-        <AdsterraBanner 
-          containerId="category-header-banner" 
-          adKey="0d1e33159744964659cb9d2f727263fa" 
-          height={90} 
-          width={728} 
-        />
-      </AdWrapper>
-    </section>
-
     <div class="grid lg:grid-cols-3 gap-8">
       <div class="lg:col-span-2">
         <h1 class="text-3xl font-bold mb-8 capitalize border-l-4 border-red-600 pl-4">Berita {category}</h1>
@@ -112,15 +101,6 @@ const schema = {
             ))}
           </ul>
         </div>
-        
-        <AdWrapper>
-          <AdsterraBanner 
-            containerId="category-sidebar-square" 
-            adKey="c638c69d43e19fdfba16a1c280a85a01" 
-            height={250} 
-            width={300} 
-          />
-        </AdWrapper>
         
         <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
           <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><span class="w-2 h-6 bg-red-600 rounded-sm"></span> Rekomendasi</h3>

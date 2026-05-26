@@ -1,0 +1,19 @@
+---
+const { node } = Astro.props;
+const post = node?.post;
+
+if (!post) return null;
+
+const slug = typeof post.slug === 'string' ? post.slug : post.slug?.current;
+---
+
+<div class="my-6 p-4 bg-white border border-gray-100 rounded-xl shadow-sm">
+  <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+    Baca Juga:
+  </p>
+  <a href={`/posts/${slug}`} class="block group">
+    <h3 class="text-lg font-semibold text-gray-800 group-hover:text-red-600 transition-colors">
+      {post.title}
+    </h3>
+  </a>
+</div>
