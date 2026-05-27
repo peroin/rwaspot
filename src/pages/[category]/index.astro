@@ -1,16 +1,24 @@
 ---
-export const prerender = true; 
+export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
 import AdsterraBanner from '../../components/AdsterraBanner.astro';
 import AdWrapper from '../../components/IklanWrapper.astro';
 import { client } from '../../lib/sanity';
 
 // Fungsi Helper
-const getOptimizedImageUrl = (url: string, width = 600, height = 400) => url ? `${url}?w=${width}&h=${height}&fit=crop&auto=format&q=80` : '';
-const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+const getOptimizedImageUrl = (url: string, width = 600, height = 400) => 
+  url ? `${url}?w=${width}&h=${height}&fit=crop&auto=format&q=80` : '';
+
+const formatDate = (dateString: string) => 
+  new Date(dateString).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
 
 export async function getStaticPaths() {
-  return [{ params: { category: 'dunia' } }, { params: { category: 'crypto' } }, { params: { category: 'rwa' } }, { params: { category: 'price' } }];
+  return [
+    { params: { category: 'dunia' } },
+    { params: { category: 'crypto' } },
+    { params: { category: 'rwa' } },
+    { params: { category: 'price' } }
+  ];
 }
 
 const { category } = Astro.params;
@@ -22,8 +30,15 @@ const descriptions: Record<string, string> = {
 };
 
 const pageDescription = descriptions[category] || `Baca artikel terbaru mengenai topik ${category} di RWADaily.`;
-const posts = await client.fetch(`*[_type == "post" && category == $category]|order(publishedAt desc){title, slug, publishedAt, "imageUrl": image.asset->url}`, { category });
-const trending = await client.fetch(`*[_type == "post"]|order(publishedAt desc)[0...4]{title, slug, "imageUrl": image.asset->url}`);
+
+const posts = await client.fetch(
+  `*[_type == "post" && category == $category]|order(publishedAt desc){title, slug, publishedAt, "imageUrl": image.asset->url}`, 
+  { category }
+);
+
+const trending = await client.fetch(
+  `*[_type == "post"]|order(publishedAt desc)[0...4]{title, slug, "imageUrl": image.asset->url}`
+);
 
 const schema = {
   "@context": "https://schema.org",
@@ -74,7 +89,9 @@ const schema = {
             </div>
             {posts.length > 6 && (
               <div class="mt-10 text-center">
-                <button id="load-more" class="bg-gray-900 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-600 transition">Muat Artikel Lainnya</button>
+                <button id="load-more" class="bg-gray-900 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-600 transition">
+                  Muat Artikel Lainnya
+                </button>
               </div>
             )}
           </>
@@ -87,7 +104,9 @@ const schema = {
 
       <aside class="space-y-8">
         <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h3 class="font-bold text-lg mb-6 flex items-center gap-2"><span class="w-2 h-6 bg-red-600 rounded-sm"></span> Berita Terkini</h3>
+          <h3 class="font-bold text-lg mb-6 flex items-center gap-2">
+            <span class="w-2 h-6 bg-red-600 rounded-sm"></span> Berita Terkini
+          </h3>
           <ul class="space-y-6">
             {trending.map((post: any) => (
               <li class="group">
@@ -101,9 +120,11 @@ const schema = {
             ))}
           </ul>
         </div>
-        
+
         <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-          <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><span class="w-2 h-6 bg-red-600 rounded-sm"></span> Rekomendasi</h3>
+          <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+            <span class="w-2 h-6 bg-red-600 rounded-sm"></span> Rekomendasi
+          </h3>
           <ul class="space-y-4">
             {trending.slice(0, 3).map((post: any) => (
               <li>
@@ -127,6 +148,8 @@ const schema = {
       item.classList.remove('hidden');
       setTimeout(() => { item.classList.remove('opacity-0'); }, 50);
     }
-    if (document.querySelectorAll('.post-item.hidden').length === 0) { this.style.display = 'none'; }
+    if (document.querySelectorAll('.post-item.hidden').length === 0) { 
+      this.style.display = 'none'; 
+    }
   });
 </script>
