@@ -1,48 +1,39 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { client, urlFor } from '../lib/sanity';
+import ArticleCard from '../components/ArticleCard.astro';
 
-// Kita perbaiki query untuk mengambil penulis dari field 'authors' (array)
-const postQuery = `title, _createdAt, slug, "image": image, category, "author": authors[0]->name`;
+const fields = `title, _createdAt, slug, "image": image, category, "author": authors[0]->name`;
 
-// 1. Mengambil data Terbaru
-const dataTerbaru = await client.fetch(`*[_type == "post"] | order(_createdAt desc)[0...5]{title, _createdAt, slug, "author": authors[0]->name}`);
-
-// 2. Mengambil Top Artikel
-const topArticles = await client.fetch(`*[_type == "post"] | order(_createdAt desc)[0...3]{
-  ${postQuery}
-}`);
-
-// 3. Mengambil Rekomendasi
-const dataRekomendasi = await client.fetch(`*[_type == "post"] | order(_createdAt desc)[5...9]{
-  ${postQuery}
-}`);
-
-// 4. Mengambil Price Posts
-const pricePosts = await client.fetch(`*[_type == "post" && category == "price"] | order(_createdAt desc)[0...4]{
-  ${postQuery}
-}`);
-
-// 5. Mengambil Crypto Posts
-const cryptoPosts = await client.fetch(`*[_type == "post" && category == "crypto"] | order(_createdAt desc)[0...6]{
-  ${postQuery}
-}`);
+const [dataTerbaru, topArticles, dataRekomendasi, pricePosts, cryptoPosts] = await Promise.all([
+  client.fetch(`*[_type == "post"] | order(_createdAt desc)[0...5]{title, _createdAt, slug, "author": authors[0]->name}`),
+  client.fetch(`*[_type == "post"] | order(_createdAt desc)[0...3]{${fields}}`),
+  client.fetch(`*[_type == "post"] | order(_createdAt desc)[5...9]{${fields}}`),
+  client.fetch(`*[_type == "post" && category == "price"] | order(_createdAt desc)[0...4]{${fields}}`),
+  client.fetch(`*[_type == "post" && category == "crypto"] | order(_createdAt desc)[0...6]{${fields}}`)
+]);
 ---
 
 <Layout title="Beranda | RWADaily">
+  <style is:global>
+    a:hover, a:focus, a:active {
+      color: black !important;
+    }
+  </style>
+
   <main class="w-full px-6 py-8 bg-white text-black font-sans">
     
     <div class="grid grid-cols-12 gap-6">
-      <section class="col-span-12 lg:col-span-3 border-r border-gray-50 pr-6">
+      <section class="col-span-12 lg:col-span-3 border-r border-gray-200 pr-6">
         <h2 class="text-[11px] font-bold uppercase tracking-[0.2em] border-b border-black pb-1 mb-4">Terbaru</h2>
         <div class="space-y-5">
           {dataTerbaru.map((post) => (
-            <div class="border-b border-gray-50 pb-4">
+            <div class="border-b border-gray-200 pb-4 group">
               <div class="flex items-center gap-2 mb-1">
                 <span class="text-[10px] font-bold text-black uppercase tracking-widest">{post.author || "Penulis"}</span>
                 <span class="text-[10px] font-medium text-gray-400">• {new Date(post._createdAt).toLocaleDateString('id-ID')}</span>
               </div>
-              <a href={`/posts/${post.slug?.current}`} class="text-base font-medium leading-normal hover:underline cursor-pointer block">
+              <a href={`/posts/${post.slug?.current}`} class="text-base font-medium leading-normal !text-black hover:!text-black block">
                 {post.title}
               </a>
             </div>
@@ -55,118 +46,82 @@ const cryptoPosts = await client.fetch(`*[_type == "post" && category == "crypto
           <h2 class="text-[11px] font-bold uppercase tracking-[0.2em] pb-1">Top Berita</h2>
         </div>
         
-        <div class="group relative w-full aspect-video cursor-pointer mb-6 overflow-hidden rounded-2xl bg-gray-200">
-          {topArticles[0]?.image ? (
-            <img src={urlFor(topArticles[0].image).width(800).url()} alt={topArticles[0].title} class="w-full h-full object-cover" />
-          ) : (
-            <div class="w-full h-full flex items-center justify-center text-gray-400 font-bold">No Image</div>
-          )}
-          <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black via-black/80 to-transparent">
-            <a href={`/posts/${topArticles[0]?.slug?.current}`} class="block text-2xl font-bold text-white leading-tight hover:underline">
-              {topArticles[0]?.title || "Judul Berita Utama"}
-            </a>
-            <p class="text-white text-sm mt-2 font-bold uppercase tracking-wide">Oleh {topArticles[0]?.author || "Penulis"}</p>
+        {topArticles[0] && (
+          <div class="group relative w-full aspect-video cursor-pointer mb-6 overflow-hidden rounded-2xl bg-gray-100">
+            <img src={urlFor(topArticles[0].image).width(800).format('webp').url()} alt={topArticles[0].title} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+            <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black/90 to-transparent">
+              <a href={`/posts/${topArticles[0].slug?.current}`} class="block text-2xl font-bold text-white leading-tight hover:!text-white">
+                {topArticles[0].title}
+              </a>
+              <p class="text-white/80 text-sm mt-2 font-bold uppercase tracking-wide">Oleh {topArticles[0].author || "Penulis"}</p>
+            </div>
           </div>
-        </div>
+        )}
 
         <div class="grid grid-cols-2 gap-6 mb-6">
-          {topArticles.slice(1, 3).map((post) => (
-            <div class="flex flex-col">
-              <a href={`/posts/${post.slug?.current}`} class="w-full aspect-video mb-4 rounded-xl overflow-hidden flex items-center justify-center bg-gray-200">
-                 {post.image ? <img src={urlFor(post.image).width(400).url()} class="w-full h-full object-cover" /> : <span class="text-xs text-gray-400">No Image</span>}
-              </a>
-              <div class="border-b border-gray-50 pb-3">
-                <a href={`/posts/${post.slug?.current}`} class="font-bold text-base leading-snug hover:underline cursor-pointer">{post.title}</a>
-                <p class="text-[10px] text-gray-500 mt-1 uppercase font-bold tracking-widest">{post.author || "Penulis"}</p>
-              </div>
-            </div>
-          ))}
+          {topArticles.slice(1, 3).map((post) => <div class="text-black hover:text-black"><ArticleCard post={post} /></div>)}
         </div>
       </section>
 
-      <aside class="col-span-12 lg:col-span-3 border-l border-gray-50 pl-6">
+      <aside class="col-span-12 lg:col-span-3 border-l border-gray-200 pl-6">
         <h3 class="text-[11px] font-bold uppercase tracking-[0.2em] border-b border-black pb-1 mb-4">Rekomendasi</h3>
         <div class="space-y-5">
           {dataRekomendasi.map((post) => (
-            <div class="flex gap-3 items-start group cursor-pointer border-b border-gray-50 pb-4">
+            <div class="flex gap-3 items-start group cursor-pointer border-b border-gray-200 pb-4">
               <div class="flex flex-col">
-                <span class="text-[11px] font-bold text-black uppercase tracking-widest mt-0.5">
-                  {post.category ? post.category.toUpperCase() : "RWA"}
-                </span>
+                <span class="text-[11px] font-bold text-black uppercase tracking-widest mt-0.5">{post.category ? post.category.toUpperCase() : "RWA"}</span>
                 <span class="text-[9px] text-gray-400 font-bold">{post.author || "Penulis"}</span>
               </div>
-              <a href={`/posts/${post.slug?.current}`} class="text-sm font-semibold leading-snug hover:underline mt-0.5">{post.title}</a>
+              <a href={`/posts/${post.slug?.current}`} class="text-sm font-semibold leading-snug !text-black hover:!text-black mt-0.5">{post.title}</a>
             </div>
           ))}
         </div>
       </aside>
     </div>
 
-    <section class="mt-12 border-t border-gray-50 pt-8">
-      <div class="border-b border-black mb-6">
-        <h2 class="text-[11px] font-bold uppercase tracking-[0.2em] pb-1">Berita Kripto</h2>
-      </div>
-      <div class="grid grid-cols-12 gap-6">
-        <div class="col-span-12 lg:col-span-6 order-2">
-          <a href={`/posts/${cryptoPosts[0]?.slug?.current}`} class="relative block w-full aspect-video bg-gray-200 rounded-xl overflow-hidden">
-            {cryptoPosts[0]?.image ? <img src={urlFor(cryptoPosts[0].image).width(800).url()} alt={cryptoPosts[0].title} class="w-full h-full object-cover" /> : <span class="text-gray-400">No Image</span>}
-            <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black via-black/80 to-transparent">
-              <h3 class="font-bold text-lg text-white leading-tight">{cryptoPosts[0]?.title}</h3>
-              <p class="text-white text-xs mt-2 uppercase font-bold tracking-widest">Oleh {cryptoPosts[0]?.author || "Penulis"}</p>
+    <section class="mt-12 border-t border-gray-200 pt-8">
+      <div class="border-b border-black mb-6"><h2 class="text-[11px] font-bold uppercase tracking-[0.2em] pb-1">Berita Kripto</h2></div>
+      <div class="grid grid-cols-12 gap-6 items-start">
+        <div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
+            {cryptoPosts.slice(0, 1).map(post => <div class="text-black"><ArticleCard post={post} /></div>)}
+            <div class="flex flex-col gap-4">
+                {cryptoPosts.slice(1, 3).map(post => (
+                    <a href={`/posts/${post.slug?.current}`} class="group block text-sm border-b border-gray-200 hover:border-black pb-2 !text-black hover:!text-black">
+                        {post.title} 
+                        <span class="block text-[9px] text-gray-400 mt-1 uppercase font-bold">{post.author}</span>
+                    </a>
+                ))}
             </div>
-          </a>
         </div>
-
-        <div class="col-span-12 md:col-span-6 lg:col-span-3 order-1 space-y-6">
-          <div>
-            <a href={`/posts/${cryptoPosts[1]?.slug?.current}`} class="block w-full aspect-video bg-gray-200 rounded-xl overflow-hidden flex items-center justify-center">
-              {cryptoPosts[1]?.image ? <img src={urlFor(cryptoPosts[1].image).width(400).url()} alt={cryptoPosts[1].title} class="w-full h-full object-cover" /> : <span class="text-gray-400 text-xs">No Image</span>}
-            </a>
-            <a href={`/posts/${cryptoPosts[1]?.slug?.current}`} class="block mt-2 font-bold hover:underline">{cryptoPosts[1]?.title}</a>
-            <p class="text-[10px] text-gray-500 mt-1 uppercase font-bold tracking-widest">{cryptoPosts[1]?.author || "Penulis"}</p>
-          </div>
-          <div class="space-y-4">
-             {cryptoPosts.slice(2, 4).map(post => (
-                <a href={`/posts/${post.slug?.current}`} class="block text-sm border-b pb-2 hover:underline">
-                    {post.title} <span class="block text-[9px] text-gray-400">{post.author || "Penulis"}</span>
-                </a>
-             ))}
-          </div>
+        <div class="col-span-12 lg:col-span-6">
+          {cryptoPosts[3] && (
+             <a href={`/posts/${cryptoPosts[3].slug?.current}`} class="relative block w-full aspect-video bg-gray-100 rounded-xl overflow-hidden group">
+                <img src={urlFor(cryptoPosts[3].image).width(800).format('webp').url()} alt={cryptoPosts[3].title} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black/90 to-transparent">
+                  <h3 class="font-bold text-lg text-white leading-tight">{cryptoPosts[3].title}</h3>
+                  <p class="text-white/80 text-xs mt-2 uppercase font-bold tracking-widest">Oleh {cryptoPosts[3].author || "Penulis"}</p>
+                </div>
+             </a>
+          )}
         </div>
-
-        <div class="col-span-12 md:col-span-6 lg:col-span-3 order-3 space-y-6">
-          <div>
-            <a href={`/posts/${cryptoPosts[4]?.slug?.current}`} class="block w-full aspect-video bg-gray-200 rounded-xl overflow-hidden flex items-center justify-center">
-              {cryptoPosts[4]?.image ? <img src={urlFor(cryptoPosts[4].image).width(400).url()} alt={cryptoPosts[4].title} class="w-full h-full object-cover" /> : <span class="text-gray-400 text-xs">No Image</span>}
-            </a>
-            <a href={`/posts/${cryptoPosts[4]?.slug?.current}`} class="block mt-2 font-bold hover:underline">{cryptoPosts[4]?.title}</a>
-            <p class="text-[10px] text-gray-500 mt-1 uppercase font-bold tracking-widest">{cryptoPosts[4]?.author || "Penulis"}</p>
-          </div>
-          <div class="space-y-4">
-             {cryptoPosts.slice(5, 7).map(post => (
-                <a href={`/posts/${post.slug?.current}`} class="block text-sm border-b pb-2 hover:underline">
-                    {post.title} <span class="block text-[9px] text-gray-400">{post.author || "Penulis"}</span>
-                </a>
-             ))}
-          </div>
+        <div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
+            {cryptoPosts.slice(4, 5).map(post => <div class="text-black"><ArticleCard post={post} /></div>)}
+            <div class="flex flex-col gap-4">
+                {cryptoPosts.slice(5, 7).map(post => (
+                    <a href={`/posts/${post.slug?.current}`} class="group block text-sm border-b border-gray-200 hover:border-black pb-2 !text-black hover:!text-black">
+                        {post.title} 
+                        <span class="block text-[9px] text-gray-400 mt-1 uppercase font-bold">{post.author}</span>
+                    </a>
+                ))}
+            </div>
         </div>
       </div>
     </section>
 
-    <section class="mt-12 border-t border-gray-50 pt-8">
-      <div class="border-b border-black mb-6">
-        <h2 class="text-[11px] font-bold uppercase tracking-[0.2em] pb-1">Analisis Harga</h2>
-      </div>
+    <section class="mt-12 border-t border-gray-200 pt-8">
+      <div class="border-b border-black mb-6"><h2 class="text-[11px] font-bold uppercase tracking-[0.2em] pb-1">Analisis Harga</h2></div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {pricePosts.map((post) => (
-          <div class="flex flex-col gap-2">
-            <a href={`/posts/${post.slug?.current}`} class="w-full aspect-video bg-gray-200 rounded-xl overflow-hidden flex items-center justify-center">
-              {post.image ? <img src={urlFor(post.image).width(400).url()} alt={post.title} class="w-full h-full object-cover" /> : <span class="text-gray-400 text-xs">No Image</span>}
-            </a>
-            <a href={`/posts/${post.slug?.current}`} class="font-bold text-sm hover:underline">{post.title}</a>
-            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">{post.author || "Penulis"}</p>
-          </div>
-        ))}
+        {pricePosts.map((post) => <div class="text-black"><ArticleCard post={post} /></div>)}
       </div>
     </section>
   </main>

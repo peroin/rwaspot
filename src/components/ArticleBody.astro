@@ -1,15 +1,22 @@
-<div class="prose lg:prose-xl prose-red max-w-none 
-            px-4 md:px-0                
-            prose-p:mb-6 
-            prose-headings:mt-8 
-            prose-headings:mb-4 
-            prose-headings:font-bold 
-            prose-ol:list-decimal 
-            prose-ul:list-disc 
-            prose-li:my-2
-            prose-img:rounded-xl 
-            prose-img:w-full 
-            prose-img:h-auto 
-            prose-img:object-contain">
+<div class="prose prose-lg max-w-none 
+            /* Spasi & Padding */
+            px-4 md:px-0 
+            prose-p:text-gray-800 prose-p:leading-relaxed 
+            
+            /* Tipografi & Heading */
+            prose-headings:font-bold prose-headings:text-black 
+            prose-headings:tracking-tight
+            
+            /* List - Marker diubah menjadi hitam */
+            prose-ol:list-decimal prose-ul:list-disc 
+            prose-li:marker:text-black
+            
+            /* Link - Dikunci agar tetap hitam dan tidak berubah warna */
+            prose-a:text-black prose-a:no-underline hover:prose-a:text-black
+            
+            /* Gambar */
+            prose-img:rounded-2xl prose-img:shadow-sm 
+            prose-img:w-full prose-img:h-auto 
+            prose-img:object-cover">
   <slot />
 </div>

@@ -61,6 +61,7 @@ const schema = {
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style is:global>
+      /* Alpine.js - Mencegah kedipan saat loading */
       [x-cloak] { display: none !important; }
       
       body { 
@@ -68,6 +69,14 @@ const schema = {
         -webkit-font-smoothing: antialiased; 
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
         font-display: swap; 
+      }
+
+      /* KUNCI PAKSA LINK HITAM: Hanya di dalam <main> DAN BUKAN di dalam footer */
+      /* Menggunakan :not(footer *) memastikan elemen di dalam footer tidak ikut berubah */
+      main a:not(.text-white):not(.text-white *):not(footer *),
+      main a:not(.text-white):not(.text-white *):not(footer *):hover {
+        color: black !important;
+        transition: color 0.2s ease;
       }
     </style>
     
