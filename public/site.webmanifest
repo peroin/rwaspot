@@ -1,8 +1,6 @@
 {
-  "name": "RWASpot",
-  "short_name": "RWASpot",
-  "description": "Portal berita RWA, saham, dan crypto terdepan.",
-  "start_url": "/",
+  "name": "Rwadaily",
+  "short_name": "Rwadaily",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -17,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#1a1c24",
-  "background_color": "#1a1c24",
+  "theme_color": "#071423",
+  "background_color": "#071423",
   "display": "standalone"
 }
