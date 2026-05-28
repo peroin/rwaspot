@@ -10,7 +10,6 @@ const currentPath = Astro.url.pathname;
 >
   <div class="max-w-7xl mx-auto px-4 flex justify-between items-center relative">
     
-    <!-- Logo & Brand -->
     <a href="/" class="flex items-center gap-2" aria-label="RWAdaily Home">
       <img src="/logo.svg" alt="RWAdaily Logo" class="w-10 h-10 object-contain" />
       <span class="text-2xl font-bold tracking-tight">
@@ -18,10 +17,8 @@ const currentPath = Astro.url.pathname;
       </span>
     </a>
     
-    <!-- Bagian Kanan -->
     <div class="flex items-center gap-6">
       
-      <!-- Desktop Links -->
       <div class="hidden md:flex gap-6 font-medium text-sm">
         {navLinks.map(link => {
           const path = link === "Home" ? "/" : `/${link.toLowerCase()}`;
@@ -37,16 +34,6 @@ const currentPath = Astro.url.pathname;
         })}
       </div>
 
-      <!-- Search Input -->
-      <div class="hidden md:block relative">
-        <input 
-          type="search" 
-          placeholder="Cari berita..." 
-          class="bg-gray-800 text-sm px-4 py-1.5 rounded-full outline-none focus:ring-2 focus:ring-yellow-400 border border-gray-700 w-48 transition-all text-white placeholder-gray-400" 
-        />
-      </div>
-
-      <!-- Menu Button -->
       <button 
         @click="menuOpen = !menuOpen" 
         class="p-2 text-white hover:text-yellow-400 transition-colors focus:outline-none"
@@ -60,7 +47,6 @@ const currentPath = Astro.url.pathname;
     </div>
   </div>
 
-  <!-- Dropdown Menu -->
   <div 
     x-show="menuOpen" 
     x-cloak
