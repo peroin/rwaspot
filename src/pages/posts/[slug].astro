@@ -1,12 +1,10 @@
 ---
 export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
-import AdsterraBanner from '../../components/AdsterraBanner.astro';
 import ShareButton from '../../components/ShareButton.astro';
-import AdWrapper from '../../components/IklanWrapper.astro'; 
 import ArticleBody from '../../components/ArticleBody.astro'; 
 import { sanityClient } from "sanity:client";
-import { urlFor } from '../../lib/sanity'; // Pastikan path ini benar
+import { urlFor } from '../../lib/sanity'; 
 import ReadMore from '../../components/ReadMore.astro';
 
 export async function getStaticPaths() {
@@ -53,55 +51,51 @@ if (!post) return Astro.redirect('/404');
 
 <Layout 
   title={post.title} 
-  description={post.excerpt || `Baca artikel selengkapnya tentang ${post.title} di RWASpot.`}
+  description={post.excerpt || `Baca artikel selengkapnya tentang ${post.title} di RWAdaily.`}
   image={post.imageUrl}
 >
-  <Fragment slot="head">
-    <script type="application/ld+json" is:inline set:html={JSON.stringify({
-      "@context": "https://schema.org", "@type": "NewsArticle",
-      "headline": post.title, "image": [post.imageUrl], "datePublished": post.publishedAt,
-      "author": post.authors?.map((author: any) => ({ "@type": "Person", "name": author.name, "jobTitle": author.role }))
-    })}></script>
-  </Fragment>
-
-  <main class="max-w-6xl mx-auto py-12 px-4 grid lg:grid-cols-3 gap-8">
+  <main class="max-w-7xl mx-auto py-6 md:py-12 px-4 md:px-6 grid lg:grid-cols-3 gap-8">
+    
     <div class="lg:col-span-2">
-      <article class="bg-white p-6 md:p-12 rounded-2xl shadow-sm border border-gray-200">
-        <h1 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight text-gray-900">{post.title}</h1>
+      <article class="bg-white p-5 md:p-10 rounded-2xl shadow-sm border border-gray-200">
         
-        <div class="flex items-center gap-6 text-gray-500 mb-8 font-medium">
-          {post.authors?.map((author: any) => (
-            <div class="flex items-center gap-2">
-              {author.imageUrl && <img src={`${author.imageUrl}?w=100&fm=webp`} alt={author.name} class="w-8 h-8 rounded-full object-cover" />}
-              <div class="flex flex-col">
-                <span class="text-sm font-bold text-gray-800">{author.name}</span>
-                <span class="text-[10px] uppercase tracking-widest text-gray-400">{author.role}</span>
+        <h1 class="text-3xl md:text-5xl font-extrabold mb-6 leading-[1.2] text-gray-900">{post.title}</h1>
+        
+        <div class="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-gray-100 mb-8">
+          <div class="flex items-center gap-4 text-gray-500 font-medium">
+            {post.authors?.map((author: any) => (
+              <div class="flex items-center gap-2">
+                {author.imageUrl && <img src={`${author.imageUrl}?w=100&fm=webp`} alt={author.name} class="w-8 h-8 rounded-full object-cover" />}
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold text-gray-800">{author.name}</span>
+                  <span class="text-[10px] uppercase tracking-widest text-gray-400">{author.role}</span>
+                </div>
               </div>
-            </div>
-          ))}
-          <span class="text-gray-300">•</span>
-          <p class="text-sm">{new Date(post.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            ))}
+          </div>
+          <p class="text-sm text-gray-400">
+            {new Date(post.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+          </p>
         </div>
 
         {post.imageUrl && (
           <img 
-            src={`${post.imageUrl}?w=1000&auto=format&fm=webp`} 
+            src={`${post.imageUrl}?w=1200&auto=format&fm=webp`} 
             alt={post.imageAlt || post.title} 
             fetchpriority="high"
             class="w-full h-auto rounded-xl mb-10 shadow-md" 
           />
         )}
         
-        <ArticleBody>
+        <ArticleBody class="text-lg md:text-xl leading-8 md:leading-9 text-gray-800">
           {post.body?.map((block: any) => {
             if (block._type === 'bacaJuga') return <ReadMore node={block} />;
             
-            // PERBAIKAN: Gambar menggunakan urlFor agar teroptimasi & tidak pecah
             if (block._type === 'image' && block.asset) {
               return (
                 <figure class="my-8">
                   <img 
-                    src={urlFor(block.asset).width(800).auto('format').url()} 
+                    src={urlFor(block.asset).width(900).auto('format').url()} 
                     alt={block.alt || 'Gambar artikel'} 
                     class="rounded-xl w-full h-auto object-contain"
                     loading="lazy"
@@ -112,12 +106,12 @@ if (!post) return Astro.redirect('/404');
             
             if (block._type === 'block') {
               return (
-                <p class="mb-5 text-lg text-gray-700 leading-relaxed">
+                <p class="mb-6 md:mb-8 text-base md:text-lg leading-relaxed md:leading-loose text-gray-700">
                   {block.children?.map((child: any) => {
                     const mark = block.markDefs?.find((m: any) => child.marks?.includes(m._key));
                     if (mark && mark._type === 'link') {
                       return (
-                        <a href={mark.href} target="_blank" rel="noopener noreferrer" class="text-red-600 font-semibold hover:underline">
+                        <a href={mark.href} target="_blank" rel="noopener noreferrer" class="text-yellow-600 font-semibold underline hover:text-yellow-700">
                           {child.text}
                         </a>
                       );
@@ -131,13 +125,13 @@ if (!post) return Astro.redirect('/404');
           })}
         </ArticleBody>
 
-        <div class="mt-12 mb-8 p-5 border-2 border-red-600 bg-red-50 rounded-xl">
-          <div class="flex items-center gap-3 mb-2">
-            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-            <h4 class="text-sm font-black text-red-700 uppercase tracking-widest">Peringatan Risiko / Disclaimer</h4>
+        <div class="mt-12 mb-10 p-6 border-2 border-yellow-400 bg-yellow-50 rounded-xl">
+          <div class="flex items-center gap-3 mb-3">
+            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <h4 class="text-xs font-black text-yellow-800 uppercase tracking-widest">Disclaimer</h4>
           </div>
-          <p class="text-sm text-red-900 leading-relaxed font-medium">
-            Konten ini bersifat informasi edukatif semata dan <strong>bukan merupakan saran investasi keuangan</strong>. Pasar aset kripto memiliki volatilitas tinggi. Selalu lakukan riset mandiri (DYOR) sebelum mengambil keputusan investasi.
+          <p class="text-sm text-yellow-900 leading-relaxed font-medium">
+            Konten ini bersifat edukatif dan bukan saran investasi keuangan. Pasar crypto sangat volatil. Selalu lakukan riset mandiri (DYOR).
           </p>
         </div>
 
@@ -146,7 +140,7 @@ if (!post) return Astro.redirect('/404');
         {morePosts.length > 0 && (
           <div class="mt-16 border-t pt-12">
             <h2 class="text-2xl font-bold text-gray-900 mb-8">Jelajahi Berita Lainnya</h2>
-            <div class="grid md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               {morePosts.map((p: any) => (
                 <a href={`/posts/${p.slug}`} class="group block">
                   <div class="overflow-hidden rounded-lg mb-3 bg-gray-100">
@@ -157,7 +151,7 @@ if (!post) return Astro.redirect('/404');
                       class="w-full h-40 object-cover transition-transform duration-300 group-hover:scale-105" 
                     />
                   </div>
-                  <h3 class="font-semibold text-gray-800 group-hover:text-red-600 transition-colors">{p.title}</h3>
+                  <h3 class="font-semibold text-gray-800 group-hover:text-yellow-600 transition-colors">{p.title}</h3>
                 </a>
               ))}
             </div>
@@ -167,9 +161,9 @@ if (!post) return Astro.redirect('/404');
     </div>
 
     <aside class="lg:col-span-1">
-      <div class="sticky top-8 space-y-8">
+      <div class="sticky top-24 space-y-8">
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-          <h2 class="text-xl font-bold text-gray-900 mb-6 border-b pb-4">Terpopuler</h2>
+          <h2 class="text-xl font-bold text-gray-900 mb-6 border-b border-yellow-400 pb-4">Terpopuler</h2>
           <div class="space-y-6">
             {popularPosts.map((p: any) => (
               <a href={`/posts/${p.slug}`} class="flex gap-4 group items-center">
@@ -179,7 +173,7 @@ if (!post) return Astro.redirect('/404');
                   loading="lazy"
                   class="w-16 h-16 rounded-lg object-cover shrink-0" 
                 />
-                <h3 class="text-sm font-semibold text-gray-800 group-hover:text-red-600 transition-colors leading-snug line-clamp-2">{p.title}</h3>
+                <h3 class="text-sm font-semibold text-gray-800 group-hover:text-yellow-600 transition-colors leading-snug line-clamp-2">{p.title}</h3>
               </a>
             ))}
           </div>
