@@ -54,10 +54,12 @@ if (!post) return Astro.redirect('/404');
   description={post.excerpt || `Baca artikel selengkapnya tentang ${post.title} di RWAdaily.`}
   image={post.imageUrl}
 >
-  <main class="max-w-7xl mx-auto py-6 md:py-12 px-4 md:px-6 grid lg:grid-cols-3 gap-8">
+  {/* Main diatur agar padding px-0 pada mobile dan px-6 pada desktop */}
+  <main class="max-w-7xl mx-auto py-6 md:py-12 px-0 md:px-6 grid lg:grid-cols-3 gap-8">
     
     <div class="lg:col-span-2">
-      <article class="bg-white p-5 md:p-10 rounded-2xl shadow-sm border border-gray-200">
+      {/* Article: Hilangkan shadow/border pada mobile agar terasa penuh/lega */}
+      <article class="bg-white px-4 py-8 md:p-10 md:rounded-2xl md:shadow-sm md:border border-gray-200">
         
         <h1 class="text-3xl md:text-5xl font-extrabold mb-6 leading-[1.2] text-gray-900">{post.title}</h1>
         
@@ -83,11 +85,11 @@ if (!post) return Astro.redirect('/404');
             src={`${post.imageUrl}?w=1200&auto=format&fm=webp`} 
             alt={post.imageAlt || post.title} 
             fetchpriority="high"
-            class="w-full h-auto rounded-xl mb-10 shadow-md" 
+            class="w-full h-auto rounded-none md:rounded-xl mb-10 md:shadow-md" 
           />
         )}
         
-        <ArticleBody class="text-lg md:text-xl leading-8 md:leading-9 text-gray-800">
+        <ArticleBody class="text-[17px] md:text-xl leading-8 md:leading-9 text-gray-800">
           {post.body?.map((block: any) => {
             if (block._type === 'bacaJuga') return <ReadMore node={block} />;
             
@@ -97,7 +99,7 @@ if (!post) return Astro.redirect('/404');
                   <img 
                     src={urlFor(block.asset).width(900).auto('format').url()} 
                     alt={block.alt || 'Gambar artikel'} 
-                    class="rounded-xl w-full h-auto object-contain"
+                    class="rounded-none md:rounded-xl w-full h-auto object-contain"
                     loading="lazy"
                   />
                 </figure>
@@ -106,7 +108,7 @@ if (!post) return Astro.redirect('/404');
             
             if (block._type === 'block') {
               return (
-                <p class="mb-6 md:mb-8 text-base md:text-lg leading-relaxed md:leading-loose text-gray-700">
+                <p class="mb-6 md:mb-8 text-[17px] md:text-lg leading-relaxed md:leading-loose text-gray-800">
                   {block.children?.map((child: any) => {
                     const mark = block.markDefs?.find((m: any) => child.marks?.includes(m._key));
                     if (mark && mark._type === 'link') {
@@ -125,7 +127,7 @@ if (!post) return Astro.redirect('/404');
           })}
         </ArticleBody>
 
-        <div class="mt-12 mb-10 p-6 border-2 border-yellow-400 bg-yellow-50 rounded-xl">
+        <div class="mt-12 mb-10 p-6 border-2 border-yellow-400 bg-yellow-50 rounded-none md:rounded-xl">
           <div class="flex items-center gap-3 mb-3">
             <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             <h4 class="text-xs font-black text-yellow-800 uppercase tracking-widest">Disclaimer</h4>
@@ -138,7 +140,7 @@ if (!post) return Astro.redirect('/404');
         <div class="my-10 flex justify-center"><ShareButton /></div>
         
         {morePosts.length > 0 && (
-          <div class="mt-16 border-t pt-12">
+          <div class="mt-16 border-t pt-12 px-4 md:px-0">
             <h2 class="text-2xl font-bold text-gray-900 mb-8">Jelajahi Berita Lainnya</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               {morePosts.map((p: any) => (
@@ -160,9 +162,9 @@ if (!post) return Astro.redirect('/404');
       </article>
     </div>
 
-    <aside class="lg:col-span-1">
+    <aside class="lg:col-span-1 px-4 lg:px-0">
       <div class="sticky top-24 space-y-8">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+        <div class="bg-white p-6 rounded-none md:rounded-2xl shadow-sm border border-gray-200">
           <h2 class="text-xl font-bold text-gray-900 mb-6 border-b border-yellow-400 pb-4">Terpopuler</h2>
           <div class="space-y-6">
             {popularPosts.map((p: any) => (
