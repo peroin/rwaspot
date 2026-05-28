@@ -23,6 +23,7 @@ const [dataTerbaru, topArticles, dataRekomendasi, pricePosts, cryptoPosts] = awa
     
     <div class="flex flex-col lg:grid lg:grid-cols-12 gap-8">
       
+      {/* SEKSI TERBARU */}
       <section class="lg:col-span-3 lg:border-r border-gray-200 lg:pr-6 order-2 lg:order-1">
         <h2 class="text-[11px] font-bold uppercase tracking-[0.2em] border-b border-black pb-1 mb-4">Terbaru</h2>
         <div class="space-y-5">
@@ -40,19 +41,33 @@ const [dataTerbaru, topArticles, dataRekomendasi, pricePosts, cryptoPosts] = awa
         </div>
       </section>
 
+      {/* SEKSI TOP BERITA */}
       <section class="col-span-12 lg:col-span-6 order-1 lg:order-2">
         <h2 class="text-[11px] font-bold uppercase tracking-[0.2em] border-b border-black pb-1 mb-6">Top Berita</h2>
         
         {topArticles[0] && (
-          <div class="group relative w-full aspect-video mb-6 overflow-hidden rounded-xl bg-gray-100">
-            <img src={urlFor(topArticles[0].image).width(800).format('webp').url()} alt={topArticles[0].title} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-            <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/90 to-transparent">
-              <a href={`/posts/${topArticles[0].slug?.current}`} class="block text-xl md:text-2xl font-bold text-white leading-tight hover:!text-white">
+          <article class="mb-6">
+            {/* Wrapper wajib 'relative' agar lg:absolute bekerja */}
+            <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-100 mb-4">
+              <a href={`/posts/${topArticles[0].slug?.current}`}>
+                <img src={urlFor(topArticles[0].image).width(800).format('webp').url()} alt={topArticles[0].title} class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" loading="lazy" />
+              </a>
+              {/* Judul overlay hanya di desktop (lg) */}
+              <div class="hidden lg:block absolute bottom-0 left-0 p-6 bg-gradient-to-t from-black/90 to-transparent w-full">
+                <a href={`/posts/${topArticles[0].slug?.current}`} class="block text-2xl font-bold text-white leading-tight">
+                  {topArticles[0].title}
+                </a>
+                <p class="text-xs mt-2 font-bold uppercase tracking-wide text-white/80">Oleh {topArticles[0].author || "Penulis"}</p>
+              </div>
+            </div>
+            {/* Judul di bawah hanya untuk mobile (tampak di bawah 1024px) */}
+            <div class="lg:hidden">
+              <a href={`/posts/${topArticles[0].slug?.current}`} class="block text-xl font-bold text-black leading-tight">
                 {topArticles[0].title}
               </a>
-              <p class="text-white/80 text-xs mt-2 font-bold uppercase tracking-wide">Oleh {topArticles[0].author || "Penulis"}</p>
+              <p class="text-xs mt-2 font-bold uppercase tracking-wide text-gray-500">Oleh {topArticles[0].author || "Penulis"}</p>
             </div>
-          </div>
+          </article>
         )}
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
@@ -60,6 +75,7 @@ const [dataTerbaru, topArticles, dataRekomendasi, pricePosts, cryptoPosts] = awa
         </div>
       </section>
 
+      {/* SEKSI REKOMENDASI */}
       <aside class="col-span-12 lg:col-span-3 lg:border-l border-gray-200 lg:pl-6 order-3">
         <h3 class="text-[11px] font-bold uppercase tracking-[0.2em] border-b border-black pb-1 mb-4">Rekomendasi</h3>
         <div class="space-y-5">
@@ -76,6 +92,7 @@ const [dataTerbaru, topArticles, dataRekomendasi, pricePosts, cryptoPosts] = awa
       </aside>
     </div>
 
+    {/* BERITA KRIPTO */}
     <section class="mt-12 border-t border-gray-200 pt-8">
       <h2 class="text-[11px] font-bold uppercase tracking-[0.2em] border-b border-black pb-4 mb-6">Berita Kripto</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
@@ -92,12 +109,14 @@ const [dataTerbaru, topArticles, dataRekomendasi, pricePosts, cryptoPosts] = awa
         </div>
         <div class="lg:col-span-6">
           {cryptoPosts[3] && (
-             <a href={`/posts/${cryptoPosts[3].slug?.current}`} class="relative block w-full aspect-video bg-gray-100 rounded-xl overflow-hidden group">
-                <img src={urlFor(cryptoPosts[3].image).width(800).format('webp').url()} alt={cryptoPosts[3].title} class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/90 to-transparent">
-                  <h3 class="font-bold text-lg text-white leading-tight">{cryptoPosts[3].title}</h3>
-                </div>
-             </a>
+             <article class="group">
+               <a href={`/posts/${cryptoPosts[3].slug?.current}`} class="block w-full aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4">
+                  <img src={urlFor(cryptoPosts[3].image).width(800).format('webp').url()} alt={cryptoPosts[3].title} class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" loading="lazy" />
+               </a>
+               <a href={`/posts/${cryptoPosts[3].slug?.current}`} class="font-bold text-lg leading-tight block">
+                  {cryptoPosts[3].title}
+               </a>
+             </article>
           )}
         </div>
         <div class="lg:col-span-3 flex flex-col gap-6">
@@ -114,6 +133,7 @@ const [dataTerbaru, topArticles, dataRekomendasi, pricePosts, cryptoPosts] = awa
       </div>
     </section>
 
+    {/* ANALISIS HARGA */}
     <section class="mt-12 border-t border-gray-200 pt-8">
       <h2 class="text-[11px] font-bold uppercase tracking-[0.2em] border-b border-black pb-4 mb-6">Analisis Harga</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
