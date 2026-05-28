@@ -1,67 +1,85 @@
 ---
+// Navbar.astro
 const navLinks = ["Home", "Dunia", "Crypto", "RWA", "Price"];
+const currentPath = Astro.url.pathname;
 ---
 
-<nav x-data="{ mobileMenu: false }" class="bg-[#1a1c24] text-white py-4 sticky top-0 z-50 shadow-lg border-b border-gray-800">
-  <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+<nav 
+  x-data="{ menuOpen: false }" 
+  class="bg-[#1a1c24] text-white py-4 sticky top-0 z-50 shadow-lg border-b-2 border-yellow-400"
+>
+  <div class="max-w-7xl mx-auto px-4 flex justify-between items-center relative">
     
-    <!-- Logo -->
-    <a href="/" class="text-2xl font-bold italic tracking-tighter" aria-label="RWADaily Home">
-      <span class="text-red-600">RWA</span><span class="text-white">DAILY</span>
+    <!-- Logo & Brand -->
+    <a href="/" class="flex items-center gap-2" aria-label="RWAdaily Home">
+      <img src="/logo.svg" alt="RWAdaily Logo" class="w-10 h-10 object-contain" />
+      <span class="text-2xl font-bold tracking-tight">
+        <span class="text-yellow-400">RWA</span><span class="text-white font-light">daily</span>
+      </span>
     </a>
     
-    <!-- Mobile Menu Button -->
-    <button 
-      @click="mobileMenu = !mobileMenu" 
-      :aria-expanded="mobileMenu"
-      aria-label="Buka Menu Navigasi" 
-      class="md:hidden p-2 text-white focus:outline-none"
-    >
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-      </svg>
-    </button>
-    
-    <!-- Desktop Links -->
-    <div class="hidden md:flex gap-6 font-medium text-sm">
-      {navLinks.map(link => (
-        <a href={link === "Home" ? "/" : `/${link.toLowerCase()}`} class="hover:text-red-500 transition-colors">
-          {link}
-        </a>
-      ))}
-    </div>
-
-    <!-- Search Input -->
-    <div class="hidden md:block relative">
-      <label for="search-input" class="sr-only">Cari Berita</label>
-      <input 
-        id="search-input"
-        type="search" 
-        placeholder="Cari berita..." 
-        autocomplete="off"
-        class="bg-gray-800 text-sm px-4 py-1.5 rounded-full outline-none focus:ring-2 focus:ring-red-600 border border-gray-700 w-64 transition-all" 
-      />
-      <div id="search-results" class="absolute top-12 right-0 w-80 bg-white/95 backdrop-blur-sm text-gray-900 rounded-2xl shadow-2xl hidden overflow-hidden border border-gray-100 ring-1 ring-black/5 z-50">
-        <ul id="results-list" class="max-h-80 overflow-y-auto py-2"></ul>
-        <div class="px-4 py-2 bg-gray-50 border-t border-gray-100 text-[10px] text-gray-400 uppercase tracking-widest font-bold">RWADAILY SEARCH</div>
+    <!-- Bagian Kanan -->
+    <div class="flex items-center gap-6">
+      
+      <!-- Desktop Links -->
+      <div class="hidden md:flex gap-6 font-medium text-sm">
+        {navLinks.map(link => {
+          const path = link === "Home" ? "/" : `/${link.toLowerCase()}`;
+          const isActive = currentPath === path;
+          return (
+            <a 
+              href={path} 
+              class={`transition-colors duration-200 ${isActive ? '!text-yellow-400' : '!text-white hover:!text-yellow-400'}`}
+            >
+              {link}
+            </a>
+          );
+        })}
       </div>
+
+      <!-- Search Input -->
+      <div class="hidden md:block relative">
+        <input 
+          type="search" 
+          placeholder="Cari berita..." 
+          class="bg-gray-800 text-sm px-4 py-1.5 rounded-full outline-none focus:ring-2 focus:ring-yellow-400 border border-gray-700 w-48 transition-all text-white placeholder-gray-400" 
+        />
+      </div>
+
+      <!-- Menu Button -->
+      <button 
+        @click="menuOpen = !menuOpen" 
+        class="p-2 text-white hover:text-yellow-400 transition-colors focus:outline-none"
+        aria-label="Toggle Menu"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path x-show="!menuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+          <path x-show="menuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
     </div>
   </div>
 
-  <!-- Mobile Menu -->
-  <div x-show="mobileMenu" x-cloak class="md:hidden bg-[#1a1c24] border-t border-gray-800 px-4 py-4 flex flex-col gap-4">
-    {navLinks.map(link => (
-      <a href={link === "Home" ? "/" : `/${link.toLowerCase()}`} class="block py-2 border-b border-gray-800 hover:text-red-500">
-        {link}
-      </a>
-    ))}
-    <label for="search-input-mobile" class="sr-only">Cari Berita</label>
-    <input 
-      id="search-input-mobile"
-      type="search" 
-      placeholder="Cari berita..." 
-      class="bg-gray-800 text-sm px-4 py-2 rounded-lg outline-none border border-gray-700 w-full" 
-    />
+  <!-- Dropdown Menu -->
+  <div 
+    x-show="menuOpen" 
+    x-cloak
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0 -translate-y-4"
+    x-transition:enter-end="opacity-100 translate-y-0"
+    class="absolute right-4 md:right-20 mt-2 w-64 bg-[#1a1c24] border border-gray-700 rounded-2xl shadow-2xl z-40 overflow-hidden"
+  >
+    <div class="px-4 py-4 flex flex-col gap-2">
+      <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1 px-3">Kategori</p>
+      {navLinks.map(link => {
+        const path = link === "Home" ? "/" : `/${link.toLowerCase()}`;
+        return (
+          <a href={path} class="py-2.5 px-3 rounded-lg hover:bg-gray-800 hover:text-yellow-400 transition-all text-white border-b border-gray-800/50">
+            {link}
+          </a>
+        );
+      })}
+    </div>
   </div>
 </nav>
 

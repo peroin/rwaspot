@@ -13,14 +13,15 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* KITA BATASI HANYA PADA KONTEN UTAMA SAJA */
-  /* Kita gunakan selektor 'main a' agar navbar dan footer tidak tersentuh */
-  main a {
-    color: black;
+  /* PERBAIKAN: Hanya targetkan link di dalam area konten (seperti artikel) */
+  /* Jangan targetkan seluruh 'main' jika navbar/footer ada di dalamnya */
+  .prose a {
+    color: #3b82f6; /* Warna biru standar untuk link artikel */
+    text-decoration: underline;
     transition: color 0.2s;
   }
 
-  main a:hover {
-    color: black !important;
+  .prose a:hover {
+    color: #1d4ed8;
   }
 }

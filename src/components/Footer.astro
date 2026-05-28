@@ -11,14 +11,18 @@ const navLinks = [
 ];
 ---
 
-<footer class="bg-gray-900 text-gray-300 py-16 px-4 border-t-4 border-red-600">
+<footer class="bg-[#1a1c24] text-gray-300 py-16 px-4 border-t-4 border-yellow-400">
   <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
     
-    <!-- Bagian 1: Tentang RWADaily -->
     <div>
-      <h3 class="text-white text-lg font-bold mb-4">Tentang RWADaily</h3>
+      <a href="/" class="flex items-center gap-2 mb-4" aria-label="RWAdaily Home">
+        <img src="/logo.svg" alt="RWAdaily Logo" class="w-10 h-10 object-contain" />
+        <span class="text-2xl font-bold tracking-tight text-white">
+          <span class="text-yellow-400">RWA</span><span class="text-white font-light">daily</span>
+        </span>
+      </a>
       <p class="text-sm leading-relaxed mb-6">
-        RWADaily adalah portal berita terdepan yang berfokus pada Real World Assets (RWA) dan ekosistem crypto. Kami berkomitmen memberikan analisis mendalam bagi investor cerdas.
+        RWAdaily adalah portal berita terdepan yang berfokus pada Real World Assets (RWA) dan ekosistem crypto. Kami berkomitmen memberikan analisis mendalam bagi investor cerdas.
       </p>
       
       <div class="text-xs text-gray-400 mb-6">
@@ -26,30 +30,28 @@ const navLinks = [
         <p>Plaza Asia, Jl. K.H.Z. Mustofa No. 326,<br/> Tasikmalaya, Jawa Barat 46126, Indonesia.</p>
       </div>
 
-      <!-- Ikon Media Sosial RWADaily -->
       <div class="flex gap-4">
-        <a href="https://www.linkedin.com/in/rwadailybiz/" class="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn">
+        <a href="https://www.linkedin.com/in/rwadailybiz/" class="text-gray-400 hover:text-yellow-400 transition-colors" aria-label="LinkedIn">
           <Icon name="mdi:linkedin" class="w-6 h-6" />
         </a>
-        <a href="https://www.instagram.com/rwaspot" class="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
+        <a href="https://www.instagram.com/rwaspot" class="text-gray-400 hover:text-yellow-400 transition-colors" aria-label="Instagram">
           <Icon name="mdi:instagram" class="w-6 h-6" />
         </a>
-        <a href="https://x.com/Rwadailybiz" class="text-gray-400 hover:text-white transition-colors" aria-label="X (Twitter)">
+        <a href="https://x.com/Rwadailybiz" class="text-gray-400 hover:text-yellow-400 transition-colors" aria-label="X (Twitter)">
           <Icon name="mdi:twitter" class="w-6 h-6" />
         </a>
-        <a href="https://www.facebook.com/share/1HoCmT2TS1/" class="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
+        <a href="https://www.facebook.com/share/1HoCmT2TS1/" class="text-gray-400 hover:text-yellow-400 transition-colors" aria-label="Facebook">
           <Icon name="mdi:facebook" class="w-6 h-6" />
         </a>
       </div>
     </div>
 
-    <!-- Bagian 2: Pintasan -->
     <div>
       <h3 class="text-white text-lg font-bold mb-4">Pintasan</h3>
       <ul class="space-y-3 text-sm">
         {navLinks.map((link) => (
           <li>
-            <a href={link.url} class="hover:text-red-500 transition-colors flex items-center gap-2">
+            <a href={link.url} class="hover:text-yellow-400 transition-colors flex items-center gap-2">
               <Icon name="mdi:chevron-right" class="w-4 h-4"/> {link.name}
             </a>
           </li>
@@ -57,17 +59,15 @@ const navLinks = [
       </ul>
     </div>
 
-    <!-- Bagian 3: Banner Kolaborasi -->
-    <div class="bg-red-900/20 p-6 rounded-xl border border-red-900/50 flex flex-col justify-center">
+    <div class="bg-yellow-400/10 p-6 rounded-xl border border-yellow-400/30 flex flex-col justify-center">
       <h3 class="text-white font-bold mb-2">Ingin Berkolaborasi?</h3>
       <p class="text-xs text-gray-400 mb-4">Bergabunglah dengan tim kami atau kirimkan berita menarik seputar RWA dan Crypto.</p>
-      <a href="/contact" class="text-sm text-red-400 hover:text-white font-semibold transition">Hubungi Kami →</a>
+      <a href="/contact" class="text-sm text-yellow-400 hover:text-white font-semibold transition">Hubungi Kami →</a>
     </div>
   </div>
 
-  <!-- Copyright -->
   <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-gray-800 text-center text-xs text-gray-500 px-4">
-    <p class="mb-2">© {new Date().getFullYear()} RWADaily — All rights reserved.</p>
+    <p class="mb-2">© {new Date().getFullYear()} RWAdaily — All rights reserved.</p>
     <p>Investasi di bidang crypto memiliki risiko tinggi. Lakukan riset mandiri.</p>
   </div>
 </footer>
