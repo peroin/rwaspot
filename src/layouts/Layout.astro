@@ -28,6 +28,7 @@ const schema = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    {/* Google AdSense */}
     <meta name="google-adsense-account" content="ca-pub-3916515190909203">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3916515190909203" crossorigin="anonymous"></script>
     
@@ -72,7 +73,6 @@ const schema = {
       }
 
       /* KUNCI PAKSA LINK HITAM: Hanya di dalam <main> DAN BUKAN di dalam footer */
-      /* Menggunakan :not(footer *) memastikan elemen di dalam footer tidak ikut berubah */
       main a:not(.text-white):not(.text-white *):not(footer *),
       main a:not(.text-white):not(.text-white *):not(footer *):hover {
         color: black !important;
