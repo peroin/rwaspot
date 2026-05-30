@@ -3,16 +3,18 @@ import { defineConfig } from "astro/config";
 import sanity from "@sanity/astro";
 import sitemap from "@astrojs/sitemap";
 import icon from "astro-icon";
+import react from "@astrojs/react"; // 1. Tambahkan ini
 
 export default defineConfig({
   site: "https://rwadaily.biz.id",
-  output: 'static', // UBAH KE 'static'
+  output: 'static',
 
   vite: {
     plugins: [tailwindcss()],
   },
 
   integrations: [
+    react(), // 2. Tambahkan ini ke dalam array
     icon(),
     sanity({
       projectId: "1dgx0sfa",
@@ -21,5 +23,4 @@ export default defineConfig({
     }), 
     sitemap()
   ],
-  // HAPUS bagian adapter cloudflare seluruhnya
 });

@@ -1,11 +1,12 @@
 ---
 export const prerender = true;
+import { urlFor } from '../../lib/sanity';         
 import Layout from '../../layouts/Layout.astro';
 import ShareButton from '../../components/ShareButton.astro';
 import ArticleBody from '../../components/ArticleBody.astro'; 
 import { sanityClient } from "sanity:client";
-import { urlFor } from '../../lib/sanity'; 
-import ReadMore from '../../components/ReadMore.astro';
+// Import file .jsx yang baru kita buat
+import PortableTextWrapper from '../../components/PortableTextWrapper.jsx';
 
 export async function getStaticPaths() {
   const posts = await sanityClient.fetch(`*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`);
@@ -54,12 +55,10 @@ if (!post) return Astro.redirect('/404');
   description={post.excerpt || `Baca artikel selengkapnya tentang ${post.title} di RWAdaily.`}
   image={post.imageUrl}
 >
-  {/* Main diatur agar padding px-0 pada mobile dan px-6 pada desktop */}
   <main class="max-w-7xl mx-auto py-6 md:py-12 px-0 md:px-6 grid lg:grid-cols-3 gap-8">
     
     <div class="lg:col-span-2">
-      {/* Article: Hilangkan shadow/border pada mobile agar terasa penuh/lega */}
-      <article class="bg-white px-4 py-8 md:p-10 md:rounded-2xl md:shadow-sm md:border border-gray-200">
+      <article class="prose max-w-none bg-white px-4 py-8 md:p-10 md:rounded-2xl md:shadow-sm md:border border-gray-200">
         
         <h1 class="text-3xl md:text-5xl font-extrabold mb-6 leading-[1.2] text-gray-900">{post.title}</h1>
         
@@ -89,42 +88,8 @@ if (!post) return Astro.redirect('/404');
           />
         )}
         
-        <ArticleBody class="text-[17px] md:text-xl leading-8 md:leading-9 text-gray-800">
-          {post.body?.map((block: any) => {
-            if (block._type === 'bacaJuga') return <ReadMore node={block} />;
-            
-            if (block._type === 'image' && block.asset) {
-              return (
-                <figure class="my-8">
-                  <img 
-                    src={urlFor(block.asset).width(900).auto('format').url()} 
-                    alt={block.alt || 'Gambar artikel'} 
-                    class="rounded-none md:rounded-xl w-full h-auto object-contain"
-                    loading="lazy"
-                  />
-                </figure>
-              );
-            }
-            
-            if (block._type === 'block') {
-              return (
-                <p class="mb-6 md:mb-8 text-[17px] md:text-lg leading-relaxed md:leading-loose text-gray-800">
-                  {block.children?.map((child: any) => {
-                    const mark = block.markDefs?.find((m: any) => child.marks?.includes(m._key));
-                    if (mark && mark._type === 'link') {
-                      return (
-                        <a href={mark.href} target="_blank" rel="noopener noreferrer" class="text-yellow-600 font-semibold underline hover:text-yellow-700">
-                          {child.text}
-                        </a>
-                      );
-                    }
-                    return child.text;
-                  })}
-                </p>
-              );
-            }
-            return null;
-          })}
+        <ArticleBody>
+          <PortableTextWrapper body={post.body} client:load />
         </ArticleBody>
 
         <div class="mt-12 mb-10 p-6 border-2 border-yellow-400 bg-yellow-50 rounded-none md:rounded-xl">
