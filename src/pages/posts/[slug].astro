@@ -6,9 +6,6 @@ import ShareButton from '../../components/ShareButton.astro';
 import ArticleBody from '../../components/ArticleBody.astro'; 
 import { sanityClient } from "sanity:client";
 import PortableTextWrapper from '../../components/PortableTextWrapper.jsx';
-import MarketOverviewWidget from '../../components/MarketOverview.jsx'; 
-// Import komponen Ticker untuk Mobile
-import TickerMobile from '../../components/TickerMobile.jsx'; 
 
 export async function getStaticPaths() {
   const posts = await sanityClient.fetch(`*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`);
@@ -64,11 +61,6 @@ if (!post) return Astro.redirect('/404');
       <article class="prose max-w-none bg-white px-4 py-8 md:p-10 md:rounded-2xl md:shadow-sm md:border border-gray-200">
         
         <h1 class="text-3xl md:text-5xl font-extrabold mb-6 leading-[1.2] text-gray-900">{post.title}</h1>
-        
-        {/* Tampilan Mobile: TickerTape (Muncul hanya di HP) */}
-        <div class="block lg:hidden mb-6">
-            <TickerMobile client:load />
-        </div>
         
         <div class="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-gray-100 mb-8">
           <div class="flex items-center gap-4 text-gray-500 font-medium">
@@ -141,8 +133,6 @@ if (!post) return Astro.redirect('/404');
     {/* Sidebar Desktop */}
     <aside class="hidden lg:block lg:col-span-1 px-4 lg:px-0">
       <div class="sticky top-24 space-y-8">
-        <MarketOverviewWidget client:load />
-
         <div class="bg-white p-6 rounded-none md:rounded-2xl shadow-sm border border-gray-200">
           <h2 class="text-xl font-bold text-gray-900 mb-6 border-b border-yellow-400 pb-4">Terpopuler</h2>
           <div class="space-y-6">

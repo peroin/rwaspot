@@ -1,7 +1,6 @@
 // src/components/PortableTextWrapper.jsx
 import { PortableText } from "@portabletext/react";
 import ReadMore from './ReadMore.jsx';
-import SanityChart from './SanityChart.tsx'; // Tetap memanggil komponen chart Anda
 import { urlFor } from '../lib/sanity'; 
 
 export default function PortableTextWrapper({ body }) {
@@ -12,9 +11,6 @@ export default function PortableTextWrapper({ body }) {
         types: {
           // Komponen Baca Juga yang sudah ada (Aktif)
           bacaJuga: ({ value }) => <ReadMore node={value} />,
-          
-          // Komponen Stock Chart (Diperbarui agar stabil dengan metode iframe)
-          stockChart: ({ value }) => <SanityChart value={value} />,
           
           // Komponen Image yang sudah ada (Aktif)
           image: ({ value }) => {
