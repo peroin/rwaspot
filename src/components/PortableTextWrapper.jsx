@@ -1,6 +1,8 @@
+// src/components/PortableTextWrapper.jsx
 import { PortableText } from "@portabletext/react";
 import ReadMore from './ReadMore.jsx';
-import { urlFor } from '../lib/sanity'; // Import dari file yang Anda berikan
+import SanityChart from './SanityChart.tsx'; // Tetap memanggil komponen chart Anda
+import { urlFor } from '../lib/sanity'; 
 
 export default function PortableTextWrapper({ body }) {
   return (
@@ -8,9 +10,14 @@ export default function PortableTextWrapper({ body }) {
       value={body} 
       components={{
         types: {
+          // Komponen Baca Juga yang sudah ada (Aktif)
           bacaJuga: ({ value }) => <ReadMore node={value} />,
+          
+          // Komponen Stock Chart (Diperbarui agar stabil dengan metode iframe)
+          stockChart: ({ value }) => <SanityChart value={value} />,
+          
+          // Komponen Image yang sudah ada (Aktif)
           image: ({ value }) => {
-            // Gunakan urlFor dari sanity.ts untuk mendapatkan URL yang valid
             const imageUrl = urlFor(value).width(800).url();
             
             if (!imageUrl) return null;
@@ -32,8 +39,17 @@ export default function PortableTextWrapper({ body }) {
             );
           }
         },
+        // Format Block (Aktif)
         block: {
           normal: ({ children }) => <p className="mb-4 leading-relaxed text-gray-800">{children}</p>,
+          h1: ({ children }) => <h1 className="text-3xl font-bold mb-4">{children}</h1>,
+          h2: ({ children }) => <h2 className="text-2xl font-bold mb-3 mt-6">{children}</h2>,
+          h3: ({ children }) => <h3 className="text-xl font-bold mb-2 mt-4">{children}</h3>,
+        },
+        // Format List (Aktif)
+        list: {
+          bullet: ({ children }) => <ul className="list-disc ml-6 mb-4 space-y-2">{children}</ul>,
+          number: ({ children }) => <ol className="list-decimal ml-6 mb-4 space-y-2">{children}</ol>,
         }
       }} 
     />

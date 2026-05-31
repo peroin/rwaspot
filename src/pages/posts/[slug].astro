@@ -5,8 +5,10 @@ import Layout from '../../layouts/Layout.astro';
 import ShareButton from '../../components/ShareButton.astro';
 import ArticleBody from '../../components/ArticleBody.astro'; 
 import { sanityClient } from "sanity:client";
-// Import file .jsx yang baru kita buat
 import PortableTextWrapper from '../../components/PortableTextWrapper.jsx';
+import MarketOverviewWidget from '../../components/MarketOverview.jsx'; 
+// Import komponen Ticker untuk Mobile
+import TickerMobile from '../../components/TickerMobile.jsx'; 
 
 export async function getStaticPaths() {
   const posts = await sanityClient.fetch(`*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`);
@@ -24,7 +26,8 @@ const post = await sanityClient.fetch(
             _type,
             "post": post->{title, slug} 
         },
-        _type == "image" => { ..., "alt": alt } 
+        _type == "image" => { ..., "alt": alt },
+        _type == "stockChart" => { ... } 
     },
     excerpt, 
     "imageUrl": image.asset->url,
@@ -62,6 +65,11 @@ if (!post) return Astro.redirect('/404');
         
         <h1 class="text-3xl md:text-5xl font-extrabold mb-6 leading-[1.2] text-gray-900">{post.title}</h1>
         
+        {/* Tampilan Mobile: TickerTape (Muncul hanya di HP) */}
+        <div class="block lg:hidden mb-6">
+            <TickerMobile client:load />
+        </div>
+        
         <div class="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-gray-100 mb-8">
           <div class="flex items-center gap-4 text-gray-500 font-medium">
             {post.authors?.map((author: any) => (
@@ -92,6 +100,7 @@ if (!post) return Astro.redirect('/404');
           <PortableTextWrapper body={post.body} client:load />
         </ArticleBody>
 
+        {/* Disclaimer */}
         <div class="mt-12 mb-10 p-6 border-2 border-yellow-400 bg-yellow-50 rounded-none md:rounded-xl">
           <div class="flex items-center gap-3 mb-3">
             <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -102,8 +111,10 @@ if (!post) return Astro.redirect('/404');
           </p>
         </div>
 
+        {/* Share Button */}
         <div class="my-10 flex justify-center"><ShareButton /></div>
         
+        {/* More Posts */}
         {morePosts.length > 0 && (
           <div class="mt-16 border-t pt-12 px-4 md:px-0">
             <h2 class="text-2xl font-bold text-gray-900 mb-8">Jelajahi Berita Lainnya</h2>
@@ -127,8 +138,11 @@ if (!post) return Astro.redirect('/404');
       </article>
     </div>
 
-    <aside class="lg:col-span-1 px-4 lg:px-0">
+    {/* Sidebar Desktop */}
+    <aside class="hidden lg:block lg:col-span-1 px-4 lg:px-0">
       <div class="sticky top-24 space-y-8">
+        <MarketOverviewWidget client:load />
+
         <div class="bg-white p-6 rounded-none md:rounded-2xl shadow-sm border border-gray-200">
           <h2 class="text-xl font-bold text-gray-900 mb-6 border-b border-yellow-400 pb-4">Terpopuler</h2>
           <div class="space-y-6">
