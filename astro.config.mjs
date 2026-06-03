@@ -5,9 +5,11 @@ import sitemap from "@astrojs/sitemap";
 import icon from "astro-icon";
 import react from "@astrojs/react"; // 1. Tambahkan ini
 
+import cloudflare from "@astrojs/cloudflare";
+
 export default defineConfig({
   site: "https://rwadaily.biz.id",
-  output: 'static',
+  output: 'server',
 
   vite: {
     plugins: [tailwindcss()],
@@ -23,4 +25,6 @@ export default defineConfig({
     }), 
     sitemap()
   ],
+
+  adapter: cloudflare(),
 });

@@ -13,10 +13,17 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Perbaikan untuk elemen gambar khusus di dalam tabel */
+  table img {
+    display: inline-block !important;
+    max-width: none !important;
+    height: auto !important;
+    width: auto !important; /* Memastikan ukuran diatur oleh class Tailwind */
+  }
+
   /* PERBAIKAN: Hanya targetkan link di dalam area konten (seperti artikel) */
-  /* Jangan targetkan seluruh 'main' jika navbar/footer ada di dalamnya */
   .prose a {
-    color: #3b82f6; /* Warna biru standar untuk link artikel */
+    color: #3b82f6; 
     text-decoration: underline;
     transition: color 0.2s;
   }
@@ -24,4 +31,23 @@
   .prose a:hover {
     color: #1d4ed8;
   }
+}
+
+/* Animasi untuk Efek Berkedip (Flash) Harga Crypto */
+@keyframes flash-green {
+  0% { background-color: rgba(34, 197, 94, 0.4); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flash-red {
+  0% { background-color: rgba(239, 68, 68, 0.4); }
+  100% { background-color: transparent; }
+}
+
+.flash-up {
+  animation: flash-green 1.5s ease-out;
+}
+
+.flash-down {
+  animation: flash-red 1.5s ease-out;
 }

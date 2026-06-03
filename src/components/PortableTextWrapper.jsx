@@ -1,6 +1,6 @@
-// src/components/PortableTextWrapper.jsx
 import { PortableText } from "@portabletext/react";
 import ReadMore from './ReadMore.jsx';
+import CryptoTable from './CryptoTable.jsx'; // Import komponen baru
 import { urlFor } from '../lib/sanity'; 
 
 export default function PortableTextWrapper({ body }) {
@@ -11,6 +11,9 @@ export default function PortableTextWrapper({ body }) {
         types: {
           // Komponen Baca Juga yang sudah ada (Aktif)
           bacaJuga: ({ value }) => <ReadMore node={value} />,
+          
+          // Komponen Tabel Crypto baru (Terintegrasi)
+          cryptoTable: ({ value }) => <CryptoTable value={value} />,
           
           // Komponen Image yang sudah ada (Aktif)
           image: ({ value }) => {
