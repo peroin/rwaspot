@@ -1,6 +1,6 @@
 export async function onRequest(context) {
-  const { env } = context;
-  const { STOCK_CACHE } = env;
+  // context.env akan otomatis berisi variabel yang Anda simpan di Dashboard
+  const { STOCK_CACHE, FINNHUB_API_KEY } = context.env;
   const cacheKey = "harga_saham_rwa";
 
   try {
@@ -12,21 +12,17 @@ export async function onRequest(context) {
       });
     }
 
-    // 2. Fetch dengan User-Agent agar tidak diblokir
-    const response = await fetch('https://query1.finance.yahoo.com/v7/finance/quote?symbols=AAPL', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-      }
-    });
-
+    // 2. Fetch data menggunakan API Key dari env
+    const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=AAPL&token=${FINNHUB_API_KEY}`);
+    
     if (!response.ok) {
-      throw new Error(`Yahoo API error: ${response.status}`);
+      throw new Error(`Finnhub API error: ${response.status}`);
     }
 
     const result = await response.json();
 
     // 3. Simpan ke cache
-    await STOCK_CACHE.put(cacheKey, JSON.stringify(result), { expirationTtl: 18000 });
+    await STOCK_CACHE.put(cacheKey, JSON.stringify(result), { expirationTtl: 3600 });
 
     return new Response(JSON.stringify({ data: result, source: 'live-api' }), {
       headers: { "Content-Type": "application/json" }
