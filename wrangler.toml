@@ -2,7 +2,7 @@ name = "domainrwa"
 compatibility_date = "2026-05-26"
 compatibility_flags = ["nodejs_compat"]
 
-# Jika nanti ingin memakai KV untuk saham, tambahkan di sini:
-# [[kv_namespaces]]
-# binding = "STOCK_CACHE"
-# id = "MASUKKAN_ID_KV_ANDA"
+# Aktifkan binding ini agar Cloudflare mengenali STOCK_CACHE
+[[kv_namespaces]]
+binding = "STOCK_CACHE"
+id = "85d9f35657554f3aa54cc1dc4845b759"
