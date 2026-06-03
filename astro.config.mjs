@@ -8,17 +8,22 @@ import icon from "astro-icon";
 
 export default defineConfig({
   site: "https://rwadaily.biz.id",
+  // Output server sangat penting untuk mengaktifkan SSR di Cloudflare Pages
   output: 'server', 
   
   adapter: cloudflare({
     mode: 'directory',
-    // Menambahkan ini membantu Cloudflare mendeteksi fungsi SSR dengan lebih jelas
-    functionPerRoute: false, 
+    // Mengaktifkan imageService Cloudflare untuk optimasi gambar otomatis
     imageService: 'cloudflare',
   }),
   
   vite: {
     plugins: [tailwindcss()],
+    // Optimasi untuk menghindari error pada modul Node.js di Cloudflare
+    ssr: {
+      target: 'webworker',
+      noExternal: true,
+    },
   },
   
   integrations: [
