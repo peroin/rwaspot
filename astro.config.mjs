@@ -1,22 +1,22 @@
-import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+import cloudflare from "@astrojs/cloudflare";
+import react from "@astrojs/react";
 import sanity from "@sanity/astro";
 import sitemap from "@astrojs/sitemap";
+import tailwindcss from "@tailwindcss/vite";
 import icon from "astro-icon";
-import react from "@astrojs/react"; // 1. Tambahkan ini
-
-import cloudflare from "@astrojs/cloudflare";
 
 export default defineConfig({
   site: "https://rwadaily.biz.id",
-  output: 'server',
-
+  output: 'server', // Ini wajib untuk SSR
+  adapter: cloudflare({
+    imageService: 'cloudflare', // Aktifkan jika ingin optimasi gambar via Cloudflare
+  }),
   vite: {
     plugins: [tailwindcss()],
   },
-
   integrations: [
-    react(), // 2. Tambahkan ini ke dalam array
+    react(),
     icon(),
     sanity({
       projectId: "1dgx0sfa",
@@ -25,6 +25,4 @@ export default defineConfig({
     }), 
     sitemap()
   ],
-
-  adapter: cloudflare(),
 });

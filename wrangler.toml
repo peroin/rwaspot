@@ -1,3 +1,8 @@
 name = "domainrwa"
 compatibility_date = "2026-05-26"
 compatibility_flags = ["nodejs_compat"]
+
+# Jika nanti ingin memakai KV untuk saham, tambahkan di sini:
+# [[kv_namespaces]]
+# binding = "STOCK_CACHE"
+# id = "MASUKKAN_ID_KV_ANDA"
