@@ -1,14 +1,23 @@
+// src/pages/api/saham.ts
 import type { APIRoute } from 'astro';
 import yahooFinance from 'yahoo-finance2';
 
 export const GET: APIRoute = async ({ locals }) => {
-  // 1. Ambil binding KV dari Cloudflare Pages
-  // Pastikan Anda sudah membuat binding dengan nama STOCK_CACHE di dashboard
-  const { STOCK_CACHE } = locals.runtime.env;
+  // Pastikan lingkungan runtime tersedia
+  const env = locals.runtime?.env;
+  
+  if (!env || !env.STOCK_CACHE) {
+    return new Response(JSON.stringify({ error: "KV Namespace binding 'STOCK_CACHE' not configured." }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
+  const { STOCK_CACHE } = env;
   const cacheKey = "harga_saham_rwa";
 
   try {
-    // 2. Coba ambil dari Cache (KV)
+    // 1. Coba ambil dari Cache (KV)
     const cachedData = await STOCK_CACHE.get(cacheKey, { type: 'json' });
 
     if (cachedData) {
@@ -21,12 +30,11 @@ export const GET: APIRoute = async ({ locals }) => {
       });
     }
 
-    // 3. Jika cache kosong, ambil data dari Yahoo Finance
-    // Ganti 'AAPL' dengan simbol saham yang Anda butuhkan
+    // 2. Jika cache kosong, ambil data dari Yahoo Finance
     const query = 'AAPL'; 
     const result = await yahooFinance.quote(query);
 
-    // 4. Simpan ke KV dengan TTL 5 jam (18000 detik)
+    // 3. Simpan ke KV dengan TTL 5 jam (18000 detik)
     await STOCK_CACHE.put(cacheKey, JSON.stringify(result), { expirationTtl: 18000 });
 
     return new Response(JSON.stringify({ 
