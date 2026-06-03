@@ -1,8 +1,4 @@
 name = "domainrwa"
+pages_build_output_dir = "dist"
 compatibility_date = "2026-05-26"
 compatibility_flags = ["nodejs_compat"]
-
-# Aktifkan binding ini agar Cloudflare mengenali STOCK_CACHE
-[[kv_namespaces]]
-binding = "STOCK_CACHE"
-id = "85d9f35657554f3aa54cc1dc4845b759"
