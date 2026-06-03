@@ -1,18 +1,22 @@
 import type { APIRoute } from 'astro';
 import yahooFinance from 'yahoo-finance2';
 
-// 1. PENTING: Mencegah Astro melakukan prerendering statis
+// 1. PENTING: Mencegah Astro melakukan prerendering statis agar menjadi SSR (Server Side Rendering)
 export const prerender = false;
 
+// 2. Memberitahu Astro/Cloudflare bahwa ini berjalan di lingkungan Node.js
+// Ini sangat penting karena library yahoo-finance2 memerlukan fitur Node.js
+export const runtime = 'nodejs';
+
 export const GET: APIRoute = async ({ locals }) => {
-  // 2. Mengakses binding KV melalui runtime.env
-  // Catatan: 'STOCK_CACHE' harus sesuai dengan nama yang Anda masukkan di Dashboard Cloudflare
+  // Mengakses binding KV (STOCK_CACHE) yang sudah Anda buat di dashboard Cloudflare
+  // locals.runtime.env adalah cara standar mengakses binding di Cloudflare Pages
   const env = locals.runtime?.env;
 
   if (!env || !env.STOCK_CACHE) {
     return new Response(
       JSON.stringify({ 
-        error: "Server Error: KV Binding 'STOCK_CACHE' tidak terdeteksi oleh Cloudflare Pages." 
+        error: "Server Error: KV Binding 'STOCK_CACHE' tidak ditemukan di Cloudflare." 
       }), 
       {
         status: 500,
@@ -25,7 +29,7 @@ export const GET: APIRoute = async ({ locals }) => {
   const cacheKey = "harga_saham_rwa";
 
   try {
-    // 3. Coba ambil data dari KV Cache
+    // 3. Coba ambil data dari KV Cache (Kecepatan tinggi)
     const cachedData = await STOCK_CACHE.get(cacheKey, { type: 'json' });
 
     if (cachedData) {
@@ -41,7 +45,7 @@ export const GET: APIRoute = async ({ locals }) => {
     // 4. Jika cache kosong, ambil data dari API Yahoo Finance
     const result = await yahooFinance.quote('AAPL');
 
-    // 5. Simpan ke KV dengan TTL 5 jam (18000 detik)
+    // 5. Simpan ke KV dengan TTL 5 jam (18000 detik) agar tidak boros request API
     await STOCK_CACHE.put(cacheKey, JSON.stringify(result), { expirationTtl: 18000 });
 
     return new Response(JSON.stringify({ 
