@@ -8,13 +8,19 @@ import icon from "astro-icon";
 
 export default defineConfig({
   site: "https://rwadaily.biz.id",
-  output: 'server', // Ini wajib untuk SSR
+  output: 'server', 
+  
   adapter: cloudflare({
-    imageService: 'cloudflare', // Aktifkan jika ingin optimasi gambar via Cloudflare
+    mode: 'directory',
+    // Menambahkan ini membantu Cloudflare mendeteksi fungsi SSR dengan lebih jelas
+    functionPerRoute: false, 
+    imageService: 'cloudflare',
   }),
+  
   vite: {
     plugins: [tailwindcss()],
   },
+  
   integrations: [
     react(),
     icon(),
