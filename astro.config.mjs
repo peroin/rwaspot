@@ -9,14 +9,28 @@ import icon from "astro-icon";
 export default defineConfig({
   site: "https://rwadaily.biz.id",
   output: 'server',
-  adapter: cloudflare(), // Biarkan default tanpa parameter agar otomatis menyesuaikan
+  adapter: cloudflare({
+    // 1. Memaksa mode agar tidak melakukan deteksi otomatis bindings
+    mode: 'standalone',
+    // 2. Mengosongkan bindings agar adapter tidak mencoba menyuntikkan KV
+    bindings: {},
+    // 3. Mematikan layanan image otomatis yang sering memicu error binding
+    imageService: 'passthrough',
+  }),
+  
   vite: {
     plugins: [tailwindcss()],
     ssr: {
       target: 'webworker',
       noExternal: ['@astrojs/react'],
+    },
+    // 4. Memastikan tidak ada variabel global yang memicu auto-config
+    define: {
+      'process.env.SESSION': 'undefined',
+      'process.env.IMAGES': 'undefined',
     }
   },
+  
   integrations: [
     react(), 
     icon(), 
