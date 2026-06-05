@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev --force",
-    "build": "npx rimraf node_modules/.cache .astro dist && astro build",
+    "build": "npx rimraf node_modules/.cache .astro dist && astro build && npx rimraf dist/_worker.js",
     "preview": "astro preview",
     "astro": "astro",
     "generate-types": "wrangler types"
