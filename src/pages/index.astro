@@ -4,6 +4,9 @@ import { client, urlFor } from '../lib/sanity';
 import ArticleCard from '../components/ArticleCard.astro';
 import CryptoTable from '../components/CryptoTable.jsx'; 
 
+// MEMBERITAHU ASTRO BAHWA HALAMAN INI HARUS DI-BUILD MENJADI STATIS
+export const prerender = true;
+
 const fields = `title, _createdAt, slug, "image": image, category, "author": authors[0]->name`;
 
 const [dataTerbaru, topArticles, dataRekomendasi, pricePosts, cryptoPosts] = await Promise.all([
@@ -89,7 +92,6 @@ const getBadgeClass = (cat) => {
                   <span class={getBadgeClass(post.category)}>{post.category || "RWA"}</span>
                   <span class="text-[9px] text-white/60 font-bold mt-1">{post.author || "Penulis"}</span>
                 </div>
-                {/* Link putih yang berubah jadi amber-200 saat di-hover */}
                 <a href={`/posts/${post.slug?.current}`} class="text-sm font-semibold leading-snug !text-white hover:!text-amber-200">{post.title}</a>
               </div>
             ))}

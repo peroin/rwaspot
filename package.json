@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev --force",
-    "build": "rm -rf node_modules/.cache .astro dist && astro build",
+    "build": "npx rimraf node_modules/.cache .astro dist && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "generate-types": "wrangler types"
@@ -39,6 +39,7 @@
   "devDependencies": {
     "@astrojs/cloudflare": "^13.6.1",
     "@tailwindcss/typography": "^0.5.19",
-    "astro-icon": "^1.1.5"
+    "astro-icon": "^1.1.5",
+    "rimraf": "^6.1.3"
   }
 }

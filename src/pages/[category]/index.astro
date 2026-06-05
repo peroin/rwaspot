@@ -4,18 +4,25 @@ import { client } from '../../lib/sanity';
 import MarketMovers from '../../components/MarketMovers.jsx'; 
 import CryptoTable from '../../components/CryptoTable.jsx'; 
 
+// FUNGSI DINAMIS UNTUK MENDAPATKAN SEMUA KATEGORI DARI SANITY
+export async function getStaticPaths() {
+  // Mengambil daftar kategori unik dari Sanity
+  const categories = await client.fetch(`*[_type == "post" && defined(category)].category`);
+  const uniqueCategories = [...new Set(categories)];
+
+  return uniqueCategories.map((cat) => ({
+    params: { category: cat },
+  }));
+}
+
+const { category } = Astro.params;
+
 const getOptimizedImageUrl = (url: string, width = 800, height = 500) => 
   url ? `${url}?w=${width}&h=${height}&fit=crop&auto=format&q=80` : '';
 
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 };
-
-export async function getStaticPaths() {
-  return [{ params: { category: 'dunia' } }, { params: { category: 'crypto' } }, { params: { category: 'rwa' } }, { params: { category: 'price' } }];
-}
-
-const { category } = Astro.params;
 
 const posts = await client.fetch(
   `*[_type == "post" && category == $category]|order(publishedAt desc)[0...10]{
@@ -97,7 +104,6 @@ const categoryDesc = {
 
       <aside class="space-y-8 lg:border-l lg:border-gray-200 lg:pl-10 border-t pt-8 lg:pt-0 border-gray-200">
         
-        {/* Widget Crypto Permanen */}
         <section>
            <CryptoTable 
               client:visible 
@@ -108,7 +114,6 @@ const categoryDesc = {
             />
         </section>
 
-        {/* Seksi Trending dengan Gradasi Biru */}
         <section class="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-xl shadow-lg">
           <h3 class="text-xs font-bold uppercase tracking-widest text-white/90 mb-6 border-b border-white/20 pb-2">Trending</h3>
           {topTrending && (

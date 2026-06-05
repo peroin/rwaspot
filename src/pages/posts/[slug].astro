@@ -6,6 +6,9 @@ import ArticleBody from '../../components/ArticleBody.astro';
 import { sanityClient } from "sanity:client";
 import PortableTextWrapper from '../../components/PortableTextWrapper.jsx';
 
+// MEMBERITAHU ASTRO BAHWA HALAMAN INI HARUS DI-BUILD MENJADI STATIS
+export const prerender = true;
+
 export async function getStaticPaths() {
   const posts = await sanityClient.fetch(`*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`);
   return posts.map((post: any) => ({ params: { slug: post.slug } }));
