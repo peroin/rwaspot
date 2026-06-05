@@ -30,12 +30,12 @@ const schema = {
     
     <title>{pageTitle}</title>
 
-    {/* Preload Font untuk menghindari Layout Shift dan mempercepat tampilan teks */}
+    {/* Preload Font */}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     
-    {/* Penundaan Loading AdSense: Iklan baru dimuat 3 detik setelah halaman aktif */}
+    {/* Penundaan Loading AdSense */}
     <script is:inline>
       window.addEventListener('load', () => {
         setTimeout(() => {
@@ -69,7 +69,6 @@ const schema = {
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style is:global>
-      /* Mencegah kedipan saat loading */
       [x-cloak] { display: none !important; }
       
       body { 
@@ -79,7 +78,6 @@ const schema = {
         font-display: swap; 
       }
 
-      /* KUNCI PAKSA LINK HITAM */
       main a:not(.text-white):not(.text-white *):not(footer *),
       main a:not(.text-white):not(.text-white *):not(footer *):hover {
         color: black !important;

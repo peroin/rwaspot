@@ -18,18 +18,18 @@
     display: inline-block !important;
     max-width: none !important;
     height: auto !important;
-    width: auto !important; /* Memastikan ukuran diatur oleh class Tailwind */
+    width: auto !important; 
   }
 
   /* PERBAIKAN: Hanya targetkan link di dalam area konten (seperti artikel) */
   .prose a {
-    color: #3b82f6; 
+    color: #d97706; /* Diubah ke amber-600 */
     text-decoration: underline;
     transition: color 0.2s;
   }
 
   .prose a:hover {
-    color: #1d4ed8;
+    color: #b45309; /* Diubah ke amber-700 */
   }
 }
 
@@ -50,4 +50,25 @@
 
 .flash-down {
   animation: flash-red 1.5s ease-out;
+}
+
+/* SISTEM WARNA DAN DESAIN BARU */
+@layer components {
+  /* Hover effect untuk judul - Disesuaikan ke Kuning/Amber */
+  .title-hover:hover { 
+    color: #d97706 !important; 
+    transition: color 0.3s ease; 
+  }
+  
+  /* Badge Kategori */
+  .badge-crypto { @apply bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[9px] font-bold uppercase; }
+  .badge-rwa    { @apply bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[9px] font-bold uppercase; }
+  .badge-price  { @apply bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[9px] font-bold uppercase; }
+  .badge-dunia  { @apply bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[9px] font-bold uppercase; }
+  
+  /* Efek Hover Card - Bayangan disesuaikan ke nuansa Amber */
+  .card-hover:hover {
+    box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.1);
+    transition: all 0.3s ease;
+  }
 }
